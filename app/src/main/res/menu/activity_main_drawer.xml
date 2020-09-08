@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/loginItem"
+            android:icon="@android:drawable/ic_secure"
+            android:onClick="onLoginBntClicked"
+            android:title="@string/login"
+            android:state_checked="true"/>
+        <item
+            android:id="@+id/finderItem"
+            android:icon="@android:drawable/ic_search_category_default"
+            android:onClick="onFinderBntClicked"
+            android:state_checked="true"
+            android:title="@string/ricerca" />
+    </group>
+</menu>
