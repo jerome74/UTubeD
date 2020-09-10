@@ -7,6 +7,8 @@ import android.content.IntentFilter
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -17,13 +19,22 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.navigation.NavigationView
 import com.wlp.utubed.activities.LoginActivity
+import com.wlp.utubed.adapters.ListVideosAdapter
 import com.wlp.utubed.domain.AuthObj
 import com.wlp.utubed.model.UserObj
+import com.wlp.utubed.models.FindVideos
+import com.wlp.utubed.models.Video
+import com.wlp.utubed.services.VideoService
+import com.wlp.utubed.util.BROADCAST_FIND_VIDEOS
 import com.wlp.utubed.util.BROADCAST_LOGIN
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
+import org.json.JSONArray
+import org.json.JSONObject
 
 class UTubeDActivity : AppCompatActivity() {
 
@@ -51,7 +62,15 @@ class UTubeDActivity : AppCompatActivity() {
             )
         )
 
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+            listVideosReceiver, IntentFilter(
+                BROADCAST_FIND_VIDEOS
+            )
+        )
+
         notifyEventuallyLogin()
+
+        manageSpinner(true, View.INVISIBLE)
     }
 
     val loginReceiver = object : BroadcastReceiver() {
@@ -143,5 +162,127 @@ class UTubeDActivity : AppCompatActivity() {
             UserObj.reset()
             AuthObj.reset()
         }
+    }
+
+    fun onIconSearchBtnClick(view: View) {
+
+        if (!AuthObj.isLoggIn) {
+            Toast.makeText(this, "eseguire il Login!", Toast.LENGTH_SHORT).show()
+        }
+        else
+        {
+            if(nameFindTxt.text.toString().trim().isNullOrEmpty())
+            {
+                Toast.makeText(this, "inserire il nome del video da ricercare!", Toast.LENGTH_SHORT).show()
+                return
+            }
+
+            val findVideos = FindVideos(nameFindTxt.text.toString())
+
+            manageSpinner(false, View.VISIBLE)
+            hideKeyboard()
+            callFindVideos(findVideos)
+        }
+
+
+    }
+
+    fun callFindVideos(findVideos : FindVideos) {
+
+
+            VideoService.findVideos(this
+                , findVideos,
+                { esito: Boolean, messaggio: String ->
+                    if (esito) {
+                        try {
+
+                            if (messaggio.length > 0 && !messaggio.equals("[]")) {
+
+                                val responseJson: JSONArray = JSONArray(messaggio)
+
+                                var i = 0
+                                var channel = ""
+
+                                val firstLength = responseJson.getJSONObject(0).getString("length")
+
+
+                                if(!firstLength.isNullOrBlank()) {
+                                    channel = responseJson.getJSONObject(0).getString("title")
+                                    i++
+                                }
+
+                                while (i < responseJson.length()) {
+
+                                    val id = responseJson.getJSONObject(i).getString("id")
+                                    val title = responseJson.getJSONObject(i).getString("title")
+                                    val length = responseJson.getJSONObject(i).getString("length")
+
+                                    val thumbnails: JSONObject = JSONObject(responseJson.getJSONObject(i).getString("thumbnails"))
+                                    val defaultJson: JSONObject = JSONObject(thumbnails.getString("default"))
+
+                                    val video: Video = Video(id
+                                                            , title
+                                                            , defaultJson.getString("url")
+                                                            ,channel
+                                                            ,length)
+
+                                    videos.add(video)
+
+                                    i++
+                                }
+                            }
+
+                            manageSpinner(true, View.INVISIBLE)
+                            LocalBroadcastManager.getInstance(this)
+                                .sendBroadcast(Intent(BROADCAST_FIND_VIDEOS))
+
+                            Toast.makeText(this, "videos found successfully", Toast.LENGTH_SHORT)
+                                .show()
+
+                        } catch (e: Exception) {
+                            Toast.makeText(this, "error : ${e.message}", Toast.LENGTH_SHORT).show()
+                            manageSpinner(true, View.INVISIBLE)
+                        }
+
+                    } else {
+                        Toast.makeText(
+                            this,
+                            "videos found by error : $messaggio",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        manageSpinner(true, View.INVISIBLE)
+                    }
+                })
+    }
+
+    lateinit var listVideosAdapter: ListVideosAdapter
+    val videos = mutableListOf<Video>()
+
+    val listVideosReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?)
+        {
+            listVideosAdapter = ListVideosAdapter(context!!, videos)
+            videoListView.adapter = listVideosAdapter
+
+            val linearLayout: GridLayoutManager = GridLayoutManager(context, 1)
+            videoListView.layoutManager = linearLayout
+        }
+    }
+
+    fun manageSpinner(enable: Boolean, visibility : Int)
+    {
+        pbFindVideos.visibility = visibility;
+
+        nameFindTxt.isEnabled    = enable
+        icon_search_btn.isEnabled   = enable
+        mic_search_btn.isEnabled = enable
+    }
+
+
+    fun hideKeyboard(){
+        val inputManager : InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+        if(inputManager.isAcceptingText)
+            inputManager.hideSoftInputFromWindow(currentFocus?.windowToken,0)
     }
 }
