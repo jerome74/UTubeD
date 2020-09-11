@@ -1,18 +1,38 @@
 package com.wlp.utubed.adapters
 
+import android.app.Activity
+import android.app.AlertDialog
+import android.app.DownloadManager
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.os.Environment
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.wlp.utubed.R
+import com.wlp.utubed.domain.AuthObj
+import com.wlp.utubed.model.CompleteObj
+import com.wlp.utubed.models.DownloadVideo
 import com.wlp.utubed.models.Video
+import com.wlp.utubed.services.VideoService
+import com.wlp.utubed.util.BROADCAST_DOWNLOAD_VIDEO
+import com.wlp.utubed.util.BROADCAST_LOGIN
+import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.content_main.*
+import org.json.JSONObject
+import java.io.File
 import java.net.URL
 
 class ListVideosAdapter(val context : Context, val videos : List<Video>) :  RecyclerView.Adapter<ListVideosAdapter.Holder>() {
@@ -36,6 +56,8 @@ class ListVideosAdapter(val context : Context, val videos : List<Video>) :  Recy
             videos_tv_author?.text  = video.channelTitle
             videos_tv_length.text   = video.length
 
+            setEventClick(videos_img_thumb,video,layoutInflater)
+
         }
     }
 
@@ -56,5 +78,73 @@ class ListVideosAdapter(val context : Context, val videos : List<Video>) :  Recy
     override fun onBindViewHolder(holder: Holder, position: Int) {
         holder.bindProduct(videos[position], context)
         val item = videos[position]
+    }
+
+    fun setEventClick(img : ImageView, video: Video, layoutInflater : LayoutInflater) {
+
+        img?.setOnClickListener({
+
+            val builder = AlertDialog.Builder(context)
+            val dialogView = layoutInflater.inflate(R.layout.video_dialog_download, null)
+
+            dialogView.findViewById<TextView>(R.id.video_tv_channel).text = video.channelTitle
+            dialogView.findViewById<TextView>(R.id.video_tv_length).text = video.length
+            dialogView.findViewById<TextView>(R.id.video_tv_title).text = video.title
+
+
+
+
+
+            Picasso.with(context).load(video.thumbnails).into(dialogView.findViewById<ImageView>(R.id.video_img_thumb))
+
+
+            builder.setView(dialogView)
+
+                .setPositiveButton("Scarica", { dialog: DialogInterface?, which: Int ->
+
+                    (context as Activity).findViewById<ProgressBar>(R.id.pbFindVideos).visibility = View.VISIBLE
+
+                    val downloadVideo = DownloadVideo(video.id)
+
+                    VideoService.downloadVideo(context
+                        ,downloadVideo,
+                        { esito: Boolean, messaggio: String ->
+                            if(esito)
+                            {
+                                if (messaggio.length > 0 && !messaggio.equals("[]")) {
+
+                                    try{
+
+                                        val responseJson : JSONObject = JSONObject(messaggio)
+
+                                        val payloadBase64 = responseJson.getString("payloadBase64")
+
+                                        val localIntent = Intent(BROADCAST_DOWNLOAD_VIDEO)
+
+                                        localIntent.putExtra("payloadBase64",payloadBase64)
+                                        localIntent.putExtra("title",video.title)
+
+                                        LocalBroadcastManager.getInstance(context).sendBroadcast(localIntent)
+
+                                    }catch(e : Exception){
+                                        Toast.makeText(context, "error : ${e.message}", Toast.LENGTH_SHORT).show()
+                                        (context as Activity).findViewById<ProgressBar>(R.id.pbFindVideos).visibility = View.INVISIBLE
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Toast.makeText(context, "error : $messaggio", Toast.LENGTH_SHORT).show()
+                                (context as Activity).findViewById<ProgressBar>(R.id.pbFindVideos).visibility = View.INVISIBLE
+                            }
+
+                        })
+
+                })
+                .setNegativeButton("cancella", { dialog: DialogInterface?, which: Int ->
+
+                }).create().show()
+        })
+
     }
 }

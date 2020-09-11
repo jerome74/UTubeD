@@ -6,6 +6,9 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.os.Environment
+import android.text.Html
+import android.util.Base64
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -28,6 +31,7 @@ import com.wlp.utubed.model.UserObj
 import com.wlp.utubed.models.FindVideos
 import com.wlp.utubed.models.Video
 import com.wlp.utubed.services.VideoService
+import com.wlp.utubed.util.BROADCAST_DOWNLOAD_VIDEO
 import com.wlp.utubed.util.BROADCAST_FIND_VIDEOS
 import com.wlp.utubed.util.BROADCAST_LOGIN
 import kotlinx.android.synthetic.main.activity_main.*
@@ -35,6 +39,7 @@ import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.File
 
 class UTubeDActivity : AppCompatActivity() {
 
@@ -65,6 +70,12 @@ class UTubeDActivity : AppCompatActivity() {
         LocalBroadcastManager.getInstance(this).registerReceiver(
             listVideosReceiver, IntentFilter(
                 BROADCAST_FIND_VIDEOS
+            )
+        )
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+            videoDownloadReceiver, IntentFilter(
+                BROADCAST_DOWNLOAD_VIDEO
             )
         )
 
@@ -198,6 +209,8 @@ class UTubeDActivity : AppCompatActivity() {
 
                             if (messaggio.length > 0 && !messaggio.equals("[]")) {
 
+                                videos.clear()
+
                                 val responseJson: JSONArray = JSONArray(messaggio)
 
                                 var i = 0
@@ -206,7 +219,7 @@ class UTubeDActivity : AppCompatActivity() {
                                 val firstLength = responseJson.getJSONObject(0).getString("length")
 
 
-                                if(!firstLength.isNullOrBlank()) {
+                                if(firstLength.isNullOrBlank()) {
                                     channel = responseJson.getJSONObject(0).getString("title")
                                     i++
                                 }
@@ -214,7 +227,7 @@ class UTubeDActivity : AppCompatActivity() {
                                 while (i < responseJson.length()) {
 
                                     val id = responseJson.getJSONObject(i).getString("id")
-                                    val title = responseJson.getJSONObject(i).getString("title")
+                                    val title = Html.fromHtml(responseJson.getJSONObject(i).getString("title")).toString()
                                     val length = responseJson.getJSONObject(i).getString("length")
 
                                     val thumbnails: JSONObject = JSONObject(responseJson.getJSONObject(i).getString("thumbnails"))
@@ -261,11 +274,32 @@ class UTubeDActivity : AppCompatActivity() {
     val listVideosReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?)
         {
-            listVideosAdapter = ListVideosAdapter(context!!, videos)
+            listVideosAdapter = ListVideosAdapter(this@UTubeDActivity, videos)
             videoListView.adapter = listVideosAdapter
 
             val linearLayout: GridLayoutManager = GridLayoutManager(context, 1)
             videoListView.layoutManager = linearLayout
+        }
+    }
+
+    val videoDownloadReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?)
+        {
+            try
+            {
+
+                val decode = Base64.decode(intent!!.getStringExtra("payloadBase64"), Base64.DEFAULT)
+                val downloadDir =  this@UTubeDActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+
+                File("$downloadDir/${intent!!.getStringExtra("title")}.mp3").writeBytes(decode)
+
+                manageOnlySpinner(View.INVISIBLE)
+
+                Toast.makeText(this@UTubeDActivity, "download successfully in $downloadDir", Toast.LENGTH_SHORT).show()
+
+             }catch(e : Exception){
+            Toast.makeText(this@UTubeDActivity, "error : ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -276,6 +310,11 @@ class UTubeDActivity : AppCompatActivity() {
         nameFindTxt.isEnabled    = enable
         icon_search_btn.isEnabled   = enable
         mic_search_btn.isEnabled = enable
+    }
+
+    fun manageOnlySpinner(visibility : Int)
+    {
+        pbFindVideos.visibility = visibility;
     }
 
 

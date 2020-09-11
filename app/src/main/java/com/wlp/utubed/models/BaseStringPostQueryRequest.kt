@@ -13,7 +13,7 @@ class BaseStringPostQueryRequest constructor(
     , val mapParams: MutableMap<String, String>?
 ) :
     StringRequest(
-        Method.PUT
+        Method.POST
         , uri
         , responseOK
         , responseError
