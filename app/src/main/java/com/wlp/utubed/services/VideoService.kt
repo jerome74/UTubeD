@@ -1,15 +1,20 @@
 package com.wlp.utubed.services
 
 import android.content.Context
+import android.view.View
 import android.widget.Toast
 import com.android.volley.DefaultRetryPolicy
+import com.android.volley.NetworkResponse
 import com.android.volley.Response
 import com.android.volley.toolbox.Volley
+import com.wlp.utubed.UTubeDActivity
+import com.wlp.utubed.activities.LoginActivity
 import com.wlp.utubed.domain.AuthObj
 import com.wlp.utubed.model.BaseStringPostQueryRequest
 import com.wlp.utubed.model.BaseStringPostRequest
 import com.wlp.utubed.models.DownloadVideo
 import com.wlp.utubed.models.FindVideos
+import com.wlp.utubed.network.VolleyMultipartRequest
 import com.wlp.utubed.util.URI_DOWNLOAD_VIDEO
 import com.wlp.utubed.util.URI_FIND_VIDEOS
 
@@ -29,7 +34,9 @@ object VideoService
             , Response.Listener<String> {
                     response -> complete(true, response)}
             , Response.ErrorListener {
-                    error -> try{complete(false, error.message!!)}catch (e: Exception){ Toast.makeText(context, "sessione scaduta!", Toast.LENGTH_SHORT).show() }
+                    error -> try{complete(false, error.message!!)}catch (e: Exception){
+                (context as UTubeDActivity).manageSpinner(true, View.INVISIBLE)
+                Toast.makeText(context, "sessione scaduta!", Toast.LENGTH_SHORT).show() }
             } , mapHeader)
 
         baseStringRequest.setRetryPolicy(DefaultRetryPolicy(
@@ -41,22 +48,26 @@ object VideoService
 
     }
 
-    fun downloadVideo(context: Context, downloadVideo: DownloadVideo , complete : (Boolean, String) -> Unit ){
+    fun downloadVideo(context: Context, downloadVideo: DownloadVideo , complete : (Boolean, ByteArray) -> Unit ){
 
         var uri : String = "$URI_DOWNLOAD_VIDEO/${downloadVideo.type}"
 
         var mapHeader : MutableMap<String,String> = mutableMapOf();
         mapHeader.put("Authentication","${AuthObj.token}")
 
-        val baseStringRequest : BaseStringPostQueryRequest = BaseStringPostQueryRequest(
+        val volleyMultipartRequest : VolleyMultipartRequest = VolleyMultipartRequest(
             uri
             ,downloadVideo
             , "application/json; charset=utf-8"
-            , Response.Listener<String> {
-                    response -> complete(true, response)}
-            , Response.ErrorListener { error -> complete(false, error.message!!) } , mapHeader, null)
+            , Response.Listener<NetworkResponse> { response -> complete(true, response.data)}
+            , Response.ErrorListener { error -> complete(false, error.cause.toString().toByteArray()) } , mapHeader)
 
-        Volley.newRequestQueue(context).add(baseStringRequest)
+        volleyMultipartRequest.setRetryPolicy(DefaultRetryPolicy(
+            70000,
+            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT))
+
+        Volley.newRequestQueue(context).add(volleyMultipartRequest)
 
     }
 }

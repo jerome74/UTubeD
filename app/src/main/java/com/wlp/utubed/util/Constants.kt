@@ -9,6 +9,8 @@ const val BROADCAST_LOGIN = "BROADCAST_9999"
 const val BROADCAST_FIND_VIDEOS = "BROADCAST_9998"
 const val BROADCAST_DOWNLOAD_VIDEO = "BROADCAST_9997"
 
+const val PAYLOAD_DOWNLOAD = "PAYLOAD_DOWNLOAD_9999"
+
 const val BROADCAST_RESERVATION_FOUND = "broadcast.reservation"
 const val BROADCAST_RESERVATION_OK_1 = "broadcast.reservation.ok.1"
 

@@ -1,6 +1,7 @@
 package com.wlp.utubed.domain
 
 import com.wlp.utubed.util.ThisApplication
+import com.wlp.utubed.util.ThreadProgressBar
 
 object AuthObj
 {
@@ -19,6 +20,8 @@ object AuthObj
     var notify
         get() = ThisApplication.shardPrefs.notify()!!
         set(value) = ThisApplication.shardPrefs.notify(value)
+
+    var thread : ThreadProgressBar? = null
 
 
     fun reset()

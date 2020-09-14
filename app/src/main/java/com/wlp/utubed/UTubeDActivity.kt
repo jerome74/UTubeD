@@ -34,12 +34,15 @@ import com.wlp.utubed.services.VideoService
 import com.wlp.utubed.util.BROADCAST_DOWNLOAD_VIDEO
 import com.wlp.utubed.util.BROADCAST_FIND_VIDEOS
 import com.wlp.utubed.util.BROADCAST_LOGIN
+import com.wlp.utubed.util.PAYLOAD_DOWNLOAD
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
+import org.apache.commons.io.IOUtils
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
+import java.io.InputStream
 
 class UTubeDActivity : AppCompatActivity() {
 
@@ -82,6 +85,7 @@ class UTubeDActivity : AppCompatActivity() {
         notifyEventuallyLogin()
 
         manageSpinner(true, View.INVISIBLE)
+        manageSpinnerH(View.INVISIBLE,  true)
     }
 
     val loginReceiver = object : BroadcastReceiver() {
@@ -200,7 +204,7 @@ class UTubeDActivity : AppCompatActivity() {
 
     fun callFindVideos(findVideos : FindVideos) {
 
-
+        runOnUiThread {
             VideoService.findVideos(this
                 , findVideos,
                 { esito: Boolean, messaggio: String ->
@@ -219,7 +223,7 @@ class UTubeDActivity : AppCompatActivity() {
                                 val firstLength = responseJson.getJSONObject(0).getString("length")
 
 
-                                if(firstLength.isNullOrBlank()) {
+                                if (firstLength.isNullOrBlank()) {
                                     channel = responseJson.getJSONObject(0).getString("title")
                                     i++
                                 }
@@ -227,17 +231,24 @@ class UTubeDActivity : AppCompatActivity() {
                                 while (i < responseJson.length()) {
 
                                     val id = responseJson.getJSONObject(i).getString("id")
-                                    val title = Html.fromHtml(responseJson.getJSONObject(i).getString("title")).toString()
+                                    val title = Html.fromHtml(
+                                        responseJson.getJSONObject(i).getString("title")
+                                    ).toString()
                                     val length = responseJson.getJSONObject(i).getString("length")
 
-                                    val thumbnails: JSONObject = JSONObject(responseJson.getJSONObject(i).getString("thumbnails"))
-                                    val defaultJson: JSONObject = JSONObject(thumbnails.getString("default"))
+                                    val thumbnails: JSONObject = JSONObject(
+                                        responseJson.getJSONObject(i).getString("thumbnails")
+                                    )
+                                    val defaultJson: JSONObject =
+                                        JSONObject(thumbnails.getString("default"))
 
-                                    val video: Video = Video(id
-                                                            , title
-                                                            , defaultJson.getString("url")
-                                                            ,channel
-                                                            ,length)
+                                    val video: Video = Video(
+                                        id
+                                        , title
+                                        , defaultJson.getString("url")
+                                        , channel
+                                        , length
+                                    )
 
                                     videos.add(video)
 
@@ -266,6 +277,7 @@ class UTubeDActivity : AppCompatActivity() {
                         manageSpinner(true, View.INVISIBLE)
                     }
                 })
+        }
     }
 
     lateinit var listVideosAdapter: ListVideosAdapter
@@ -288,14 +300,18 @@ class UTubeDActivity : AppCompatActivity() {
             try
             {
 
-                val decode = Base64.decode(intent!!.getStringExtra("payloadBase64"), Base64.DEFAULT)
+                val decode = intent!!.getByteArrayExtra(PAYLOAD_DOWNLOAD)
                 val downloadDir =  this@UTubeDActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
 
                 File("$downloadDir/${intent!!.getStringExtra("title")}.mp3").writeBytes(decode)
 
-                manageOnlySpinner(View.INVISIBLE)
+                AuthObj.thread!!.finish = true
 
-                Toast.makeText(this@UTubeDActivity, "download successfully in $downloadDir", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@UTubeDActivity, "download successfully in $downloadDir", Toast.LENGTH_LONG).show()
+
+                manageSpinnerH(View.INVISIBLE, true)
+
+                pb_download_video.progress = 0
 
              }catch(e : Exception){
             Toast.makeText(this@UTubeDActivity, "error : ${e.message}", Toast.LENGTH_SHORT).show()
@@ -312,6 +328,15 @@ class UTubeDActivity : AppCompatActivity() {
         mic_search_btn.isEnabled = enable
     }
 
+    fun manageSpinnerH(visibility : Int, enable: Boolean)
+    {
+        pb_download_video.visibility = visibility;
+        videoListView.isEnabled    = enable
+        nameFindTxt.isEnabled    = enable
+        icon_search_btn.isEnabled   = enable
+        mic_search_btn.isEnabled = enable
+    }
+
     fun manageOnlySpinner(visibility : Int)
     {
         pbFindVideos.visibility = visibility;
@@ -323,5 +348,11 @@ class UTubeDActivity : AppCompatActivity() {
 
         if(inputManager.isAcceptingText)
             inputManager.hideSoftInputFromWindow(currentFocus?.windowToken,0)
+    }
+
+    fun File.copyInputStreamToFile(inputStream: InputStream) {
+        this.outputStream().use { fileOut ->
+            inputStream.copyTo(fileOut)
+        }
     }
 }

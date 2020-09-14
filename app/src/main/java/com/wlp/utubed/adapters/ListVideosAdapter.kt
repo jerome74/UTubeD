@@ -20,6 +20,7 @@ import android.widget.Toast
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
+import com.android.volley.NetworkResponse
 import com.squareup.picasso.Picasso
 import com.wlp.utubed.R
 import com.wlp.utubed.domain.AuthObj
@@ -29,6 +30,8 @@ import com.wlp.utubed.models.Video
 import com.wlp.utubed.services.VideoService
 import com.wlp.utubed.util.BROADCAST_DOWNLOAD_VIDEO
 import com.wlp.utubed.util.BROADCAST_LOGIN
+import com.wlp.utubed.util.PAYLOAD_DOWNLOAD
+import com.wlp.utubed.util.ThreadProgressBar
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.content_main.*
 import org.json.JSONObject
@@ -101,46 +104,58 @@ class ListVideosAdapter(val context : Context, val videos : List<Video>) :  Recy
             builder.setView(dialogView)
 
                 .setPositiveButton("Scarica", { dialog: DialogInterface?, which: Int ->
+                    (context as Activity).runOnUiThread {
 
-                    (context as Activity).findViewById<ProgressBar>(R.id.pbFindVideos).visibility = View.VISIBLE
+                        (context as Activity).findViewById<ProgressBar>(R.id.pb_download_video).visibility = View.VISIBLE
+                        (context as Activity).findViewById<RecyclerView>(R.id.videoListView).isEnabled = false
+                        (context as Activity).findViewById<TextView>(R.id.nameFindTxt).isEnabled = false
+                        (context as Activity).findViewById<ImageView>(R.id.icon_search_btn).isEnabled = false
+                        (context as Activity).findViewById<ImageView>(R.id.mic_search_btn).isEnabled = false
 
-                    val downloadVideo = DownloadVideo(video.id)
+                        val downloadVideo = DownloadVideo(video.id)
 
-                    VideoService.downloadVideo(context
-                        ,downloadVideo,
-                        { esito: Boolean, messaggio: String ->
-                            if(esito)
-                            {
-                                if (messaggio.length > 0 && !messaggio.equals("[]")) {
+                        AuthObj.thread = ThreadProgressBar((context as Activity).findViewById<ProgressBar>(R.id.pb_download_video))
+                        AuthObj.thread!!.loading()
 
-                                    try{
+                        VideoService.downloadVideo(context
+                            , downloadVideo,
+                            { esito: Boolean, messaggio: ByteArray ->
+                                if (esito) {
+                                    if (messaggio.size > 0 ) {
 
-                                        val responseJson : JSONObject = JSONObject(messaggio)
+                                        try {
 
-                                        val payloadBase64 = responseJson.getString("payloadBase64")
+                                            val localIntent = Intent(BROADCAST_DOWNLOAD_VIDEO)
 
-                                        val localIntent = Intent(BROADCAST_DOWNLOAD_VIDEO)
+                                            localIntent.putExtra(PAYLOAD_DOWNLOAD, messaggio)
+                                            localIntent.putExtra("title", video.title)
 
-                                        localIntent.putExtra("payloadBase64",payloadBase64)
-                                        localIntent.putExtra("title",video.title)
+                                            LocalBroadcastManager.getInstance(context)
+                                                .sendBroadcast(localIntent)
 
-                                        LocalBroadcastManager.getInstance(context).sendBroadcast(localIntent)
-
-                                    }catch(e : Exception){
-                                        Toast.makeText(context, "error : ${e.message}", Toast.LENGTH_SHORT).show()
-                                        (context as Activity).findViewById<ProgressBar>(R.id.pbFindVideos).visibility = View.INVISIBLE
+                                        } catch (e: Exception) {
+                                            Toast.makeText(
+                                                context,
+                                                "error : ${e.message}",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                            (context as Activity).findViewById<ProgressBar>(R.id.pb_download_video).visibility =
+                                                View.INVISIBLE
+                                        }
                                     }
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "error : $messaggio",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    (context as Activity).findViewById<ProgressBar>(R.id.pbFindVideos).visibility =
+                                        View.INVISIBLE
                                 }
-                            }
-                            else
-                            {
-                                Toast.makeText(context, "error : $messaggio", Toast.LENGTH_SHORT).show()
-                                (context as Activity).findViewById<ProgressBar>(R.id.pbFindVideos).visibility = View.INVISIBLE
-                            }
 
-                        })
+                            })
 
-                })
+                    }})
                 .setNegativeButton("cancella", { dialog: DialogInterface?, which: Int ->
 
                 }).create().show()

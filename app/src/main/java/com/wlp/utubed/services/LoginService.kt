@@ -1,6 +1,7 @@
 package com.wlp.utubed.service
 
 import android.content.Context
+import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Response
 import com.android.volley.toolbox.Volley
 import com.wlp.utubed.model.BaseStringPostLoginRequest
@@ -30,6 +31,13 @@ object LoginService {
                     complete(false, "email and/or password incorrect.")
                 }
             } , null )
+
+        baseStringPostLoginRequest.setRetryPolicy(
+            DefaultRetryPolicy(
+            30000,
+            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
+        )
 
         Volley.newRequestQueue(context).add(baseStringPostLoginRequest)
 

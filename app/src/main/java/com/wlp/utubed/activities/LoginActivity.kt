@@ -48,32 +48,30 @@ class LoginActivity : AppCompatActivity() {
 
     fun callLoginUser(user : User)
     {
-        LoginService.loginUser(this
-            ,user,
-            {
-                    esito: Boolean, messaggio: String ->
-                if(esito)
-                {
-                    try{
-                        AuthObj.isLoggIn = true
-                        Toast.makeText(this, "user Login successfully", Toast.LENGTH_SHORT).show()
-                        callFindProfileByEmail(user)
+        runOnUiThread {
+            LoginService.loginUser(this
+                , user,
+                { esito: Boolean, messaggio: String ->
+                    if (esito) {
+                        try {
+                            AuthObj.isLoggIn = true
+                            Toast.makeText(this, "user Login successfully", Toast.LENGTH_SHORT)
+                                .show()
+                            callFindProfileByEmail(user)
 
-                    }catch(e : Exception){
-                        Toast.makeText(this, "error : ${e.message}", Toast.LENGTH_SHORT).show()
+                        } catch (e: Exception) {
+                            Toast.makeText(this, "error : ${e.message}", Toast.LENGTH_SHORT).show()
+                            manageSpinner(true, View.INVISIBLE)
+                        }
+
+                    } else {
+                        Toast.makeText(this, "login error : $messaggio", Toast.LENGTH_SHORT).show()
                         manageSpinner(true, View.INVISIBLE)
                     }
 
-                }
-                else
-                {
-                    Toast.makeText(this, "login error : $messaggio", Toast.LENGTH_SHORT).show()
-                    manageSpinner(true, View.INVISIBLE)
-                }
-
-                CompleteObj.esitoLoginUser = esito
-            })
-
+                    CompleteObj.esitoLoginUser = esito
+                })
+        }
     }
 
     fun callFindProfileByEmail(user : User)
