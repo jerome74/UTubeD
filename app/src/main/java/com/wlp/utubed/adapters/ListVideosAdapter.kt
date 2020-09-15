@@ -1,5 +1,6 @@
 package com.wlp.utubed.adapters
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.DownloadManager
@@ -7,6 +8,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Environment
 import android.util.Base64
@@ -17,21 +19,21 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import com.squareup.picasso.Picasso
 import com.wlp.utubed.R
+import com.wlp.utubed.UTubeDActivity
 import com.wlp.utubed.domain.AuthObj
 import com.wlp.utubed.model.CompleteObj
 import com.wlp.utubed.models.DownloadVideo
 import com.wlp.utubed.models.Video
 import com.wlp.utubed.services.VideoService
-import com.wlp.utubed.util.BROADCAST_DOWNLOAD_VIDEO
-import com.wlp.utubed.util.BROADCAST_LOGIN
-import com.wlp.utubed.util.PAYLOAD_DOWNLOAD
-import com.wlp.utubed.util.ThreadProgressBar
+import com.wlp.utubed.util.*
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.content_main.*
 import org.json.JSONObject
@@ -86,6 +88,15 @@ class ListVideosAdapter(val context : Context, val videos : List<Video>) :  Recy
     fun setEventClick(img : ImageView, video: Video, layoutInflater : LayoutInflater) {
 
         img?.setOnClickListener({
+
+            val permissionCheck = ContextCompat.checkSelfPermission((context as UTubeDActivity),
+            Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            if (permissionCheck==PackageManager.PERMISSION_GRANTED){
+                //this means permission is granted and you can do read and write
+            }else{
+                ActivityCompat.requestPermissions((context as UTubeDActivity),
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_WRITE_PERMISSION);
+            }
 
             val builder = AlertDialog.Builder(context)
             val dialogView = layoutInflater.inflate(R.layout.video_dialog_download, null)

@@ -17,4 +17,23 @@
     <string name="signin">registrati</string>
     <string name="ricerca">ricerca</string>
 
+    <string name="extra_language">it-IT</string>
+    <string name="language">en-EN</string>
+    <string name="file">file :</string>
+    <string name="lingua">lingua :</string>
+    <string name="mp3">" mp3 "</string>
+    <string name="italiano">" ita "</string>
+    <string name="video">" Video "</string>
+    <string name="english">" eng "</string>
+
+    <string-array name="type_file">
+            <item>mp3</item>
+            <item>mp4</item>
+        </string-array>
+
+    <string-array name="type_language">
+        <item>It</item>
+        <item>En</item>
+    </string-array>
+
 </resources>

@@ -4,14 +4,17 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Environment
+import android.speech.RecognizerIntent
 import android.text.Html
-import android.util.Base64
+import android.text.SpannableStringBuilder
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -28,17 +31,14 @@ import com.wlp.utubed.activities.LoginActivity
 import com.wlp.utubed.adapters.ListVideosAdapter
 import com.wlp.utubed.domain.AuthObj
 import com.wlp.utubed.model.UserObj
+import com.wlp.utubed.models.DownloadVideo
 import com.wlp.utubed.models.FindVideos
 import com.wlp.utubed.models.Video
 import com.wlp.utubed.services.VideoService
-import com.wlp.utubed.util.BROADCAST_DOWNLOAD_VIDEO
-import com.wlp.utubed.util.BROADCAST_FIND_VIDEOS
-import com.wlp.utubed.util.BROADCAST_LOGIN
-import com.wlp.utubed.util.PAYLOAD_DOWNLOAD
+import com.wlp.utubed.util.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
-import org.apache.commons.io.IOUtils
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -47,6 +47,11 @@ import java.io.InputStream
 class UTubeDActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+
+     var language : String? = null
+     var fileTypeDownloadVideo: String? = null
+
+    val SPEECH_REQUEST_CODE = 1234;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,6 +91,43 @@ class UTubeDActivity : AppCompatActivity() {
 
         manageSpinner(true, View.INVISIBLE)
         manageSpinnerH(View.INVISIBLE,  true)
+
+        tv_choice_en.setOnClickListener(click)
+        tv_choice_it.setOnClickListener(click)
+        tv_choice_mp3.setOnClickListener(click)
+        tv_choice_video.setOnClickListener(click)
+    }
+
+    val click = View.OnClickListener {
+
+        when((it as TextView).text)
+        {
+            getString(R.string.english) -> {
+                it.background = resources.getDrawable(R.drawable.background_color_button)
+                tv_choice_it.background = resources.getDrawable(R.drawable.background_black_tras)
+
+                language = LANGUAGE_EN
+            }
+
+            getString(R.string.italiano) -> {
+                it.background = resources.getDrawable(R.drawable.background_color_button)
+                tv_choice_en.background = resources.getDrawable(R.drawable.background_black_tras)
+
+                language = LANGUAGE_IT
+            }
+            getString(R.string.mp3) -> {
+                it.background = resources.getDrawable(R.drawable.background_color_button)
+                tv_choice_video.background = resources.getDrawable(R.drawable.background_black_tras)
+
+                fileTypeDownloadVideo = FILE_TYPE_MP3
+            }
+            getString(R.string.video) -> {
+                it.background = resources.getDrawable(R.drawable.background_color_button)
+                tv_choice_mp3.background = resources.getDrawable(R.drawable.background_black_tras)
+
+                fileTypeDownloadVideo = FILE_TYPE_VIDEO
+            }
+        }
     }
 
     val loginReceiver = object : BroadcastReceiver() {
@@ -179,6 +221,46 @@ class UTubeDActivity : AppCompatActivity() {
         }
     }
 
+    fun onMicSearchBtnClick(view: View) {
+
+        if (!AuthObj.isLoggIn) {
+            Toast.makeText(this, "eseguire il Login!", Toast.LENGTH_SHORT).show()
+        }
+        if (language.isNullOrEmpty()) {
+            Toast.makeText(this, "select language", Toast.LENGTH_SHORT).show()
+        }
+        else
+        {
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,language);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, language);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, language);
+            intent.putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, language);
+            intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 2);
+            startActivityForResult(intent, SPEECH_REQUEST_CODE);
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        when(requestCode)
+        {
+            SPEECH_REQUEST_CODE ->  if (resultCode == RESULT_OK)
+            {
+                val listWords = data!!.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+
+                if(listWords.size == 0 )
+                    Toast.makeText(this, "no vaild word", Toast.LENGTH_SHORT).show()
+                else
+                {
+                    val message = listWords.get(0)
+                    nameFindTxt.text = SpannableStringBuilder(message)
+                }
+            }
+        }
+    }
+
     fun onIconSearchBtnClick(view: View) {
 
         if (!AuthObj.isLoggIn) {
@@ -191,6 +273,14 @@ class UTubeDActivity : AppCompatActivity() {
                 Toast.makeText(this, "inserire il nome del video da ricercare!", Toast.LENGTH_SHORT).show()
                 return
             }
+            if(fileTypeDownloadVideo.isNullOrEmpty())
+            {
+                Toast.makeText(this, "select type of dwonload", Toast.LENGTH_SHORT).show()
+                return
+            }
+
+            AuthObj.fileTypeDownloadVideo = fileTypeDownloadVideo!!
+
 
             val findVideos = FindVideos(nameFindTxt.text.toString())
 
@@ -301,9 +391,10 @@ class UTubeDActivity : AppCompatActivity() {
             {
 
                 val decode = intent!!.getByteArrayExtra(PAYLOAD_DOWNLOAD)
-                val downloadDir =  this@UTubeDActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+                //val downloadDir =  this@UTubeDActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+                val downloadDir = "/storage/emulated/0/Download"
 
-                File("$downloadDir/${intent!!.getStringExtra("title")}.mp3").writeBytes(decode)
+                File("$downloadDir/${intent!!.getStringExtra("title")}.${AuthObj.fileTypeDownloadVideo}").writeBytes(decode)
 
                 AuthObj.thread!!.finish = true
 
@@ -318,6 +409,7 @@ class UTubeDActivity : AppCompatActivity() {
             }
         }
     }
+
 
     fun manageSpinner(enable: Boolean, visibility : Int)
     {
@@ -353,6 +445,32 @@ class UTubeDActivity : AppCompatActivity() {
     fun File.copyInputStreamToFile(inputStream: InputStream) {
         this.outputStream().use { fileOut ->
             inputStream.copyTo(fileOut)
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            REQUEST_WRITE_PERMISSION-> {
+                // If request is cancelled, the result arrays are empty.
+                if ((grantResults.isNotEmpty() &&
+                            grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    // Permission is granted. Continue the action or workflow
+                    // in your app.
+                } else {
+                    // Explain to the user that the feature is unavailable because
+                    // the features requires a permission that the user has denied.
+                    // At the same time, respect the user's decision. Don't link to
+                    // system settings in an effort to convince the user to change
+                    // their decision.
+                }
+                return
+            }
+
+            // Add other 'when' lines to check for other
+            // permissions this app might request.
+            else -> {
+                // Ignore all other requests.
+            }
         }
     }
 }

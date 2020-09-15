@@ -50,7 +50,7 @@ object VideoService
 
     fun downloadVideo(context: Context, downloadVideo: DownloadVideo , complete : (Boolean, ByteArray) -> Unit ){
 
-        var uri : String = "$URI_DOWNLOAD_VIDEO/${downloadVideo.type}"
+        var uri : String = "$URI_DOWNLOAD_VIDEO/${AuthObj.fileTypeDownloadVideo}"
 
         var mapHeader : MutableMap<String,String> = mutableMapOf();
         mapHeader.put("Authentication","${AuthObj.token}")
@@ -60,10 +60,17 @@ object VideoService
             ,downloadVideo
             , "application/json; charset=utf-8"
             , Response.Listener<NetworkResponse> { response -> complete(true, response.data)}
-            , Response.ErrorListener { error -> complete(false, error.cause.toString().toByteArray()) } , mapHeader)
+            , Response.ErrorListener { error ->
+                try {
+                    complete(false, error.cause.toString().toByteArray())
+                }catch (e : java.lang.Exception)
+                {
+                    Toast.makeText(context, "error download file", Toast.LENGTH_SHORT).show()
+                }
+            } , mapHeader)
 
         volleyMultipartRequest.setRetryPolicy(DefaultRetryPolicy(
-            70000,
+            (5 * 60 * 1000),
             DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
             DefaultRetryPolicy.DEFAULT_BACKOFF_MULT))
 

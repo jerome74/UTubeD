@@ -21,12 +21,14 @@ object AuthObj
         get() = ThisApplication.shardPrefs.notify()!!
         set(value) = ThisApplication.shardPrefs.notify(value)
 
-    var thread : ThreadProgressBar? = null
+    lateinit var thread : ThreadProgressBar
+    lateinit var fileTypeDownloadVideo : String
 
 
     fun reset()
     {
         token  = ""
         isLoggIn = false
+        fileTypeDownloadVideo = ""
     }
 }

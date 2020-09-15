@@ -8,11 +8,22 @@ package com.wlp.utubed.util
 const val BROADCAST_LOGIN = "BROADCAST_9999"
 const val BROADCAST_FIND_VIDEOS = "BROADCAST_9998"
 const val BROADCAST_DOWNLOAD_VIDEO = "BROADCAST_9997"
+const val BROADCAST_VOICE = "BROADCAST_9996"
+
+const val REQUEST_WRITE_PERMISSION = 9999
 
 const val PAYLOAD_DOWNLOAD = "PAYLOAD_DOWNLOAD_9999"
+const val PAYLOAD_VOICE = "PAYLOAD_VOICE_9999"
 
 const val BROADCAST_RESERVATION_FOUND = "broadcast.reservation"
 const val BROADCAST_RESERVATION_OK_1 = "broadcast.reservation.ok.1"
+
+const val FILE_TYPE_MP3 = "mp3"
+const val FILE_TYPE_VIDEO = "mp4"
+
+const val LANGUAGE_IT = "it-IT"
+const val LANGUAGE_EN = "en-EN"
+
 
 
 /**
