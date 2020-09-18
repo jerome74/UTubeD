@@ -50,7 +50,7 @@ object VideoService
 
     fun downloadVideo(context: Context, downloadVideo: DownloadVideo , complete : (Boolean, ByteArray) -> Unit ){
 
-        var uri : String = "$URI_DOWNLOAD_VIDEO/${AuthObj.fileTypeDownloadVideo}"
+        var uri : String = "$URI_DOWNLOAD_VIDEO/mp4"
 
         var mapHeader : MutableMap<String,String> = mutableMapOf();
         mapHeader.put("Authentication","${AuthObj.token}")

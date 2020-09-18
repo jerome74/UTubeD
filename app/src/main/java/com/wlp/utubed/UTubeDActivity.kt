@@ -1,11 +1,13 @@
 package com.wlp.utubed
 
+import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.speech.RecognizerIntent
@@ -18,6 +20,7 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -385,27 +388,32 @@ class UTubeDActivity : AppCompatActivity() {
     }
 
     val videoDownloadReceiver = object : BroadcastReceiver() {
+        @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
         override fun onReceive(context: Context?, intent: Intent?)
         {
             try
             {
-
                 val decode = intent!!.getByteArrayExtra(PAYLOAD_DOWNLOAD)
-                //val downloadDir =  this@UTubeDActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
-                val downloadDir = "/storage/emulated/0/Download"
 
-                File("$downloadDir/${intent!!.getStringExtra("title")}.${AuthObj.fileTypeDownloadVideo}").writeBytes(decode)
+                tv_event_download.text = ""
+                tv_event_download.text = getString(R.string.status_3)
+
+                Converter.mp4ConvertTo(decode, intent!!.getStringExtra("title"), this@UTubeDActivity)
 
                 AuthObj.thread!!.finish = true
 
-                Toast.makeText(this@UTubeDActivity, "download successfully in $downloadDir", Toast.LENGTH_LONG).show()
+                AuthObj.thread = null
+
+                tv_event_download.text= ""
+
+                Toast.makeText(this@UTubeDActivity, "download successfully in /storage/emulated/0/Download", Toast.LENGTH_LONG).show()
 
                 manageSpinnerH(View.INVISIBLE, true)
 
                 pb_download_video.progress = 0
-
-             }catch(e : Exception){
-            Toast.makeText(this@UTubeDActivity, "error : ${e.message}", Toast.LENGTH_SHORT).show()
+             }
+            catch(e : Exception){
+                Toast.makeText(this@UTubeDActivity, "error : ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -25,6 +25,13 @@
     <string name="italiano">" ita "</string>
     <string name="video">" Video "</string>
     <string name="english">" eng "</string>
+    <string name="status_ini"></string>
+    <string name="status_1">Inizio Download</string>
+    <string name="status_2">Fine Download</string>
+    <string name="status_3">Inizio Conversione</string>
+    <string name="status_4">Fine Conversione</string>
+    <string name="status_5">Inizio Salvataggio File</string>
+    <string name="status_6">Fine Salvataggio File</string>
 
     <string-array name="type_file">
             <item>mp3</item>

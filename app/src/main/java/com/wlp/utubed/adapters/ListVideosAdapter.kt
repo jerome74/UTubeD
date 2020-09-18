@@ -89,13 +89,18 @@ class ListVideosAdapter(val context : Context, val videos : List<Video>) :  Recy
 
         img?.setOnClickListener({
 
-            val permissionCheck = ContextCompat.checkSelfPermission((context as UTubeDActivity),
+            val permissionCheck_WRITE_EXTERNAL_STORAGE = ContextCompat.checkSelfPermission((context as UTubeDActivity),
             Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            if (permissionCheck==PackageManager.PERMISSION_GRANTED){
+
+            val permissionCheck_READ_EXTERNAL_STORAGE = ContextCompat.checkSelfPermission((context as UTubeDActivity),
+                Manifest.permission.READ_EXTERNAL_STORAGE);
+
+            if (permissionCheck_WRITE_EXTERNAL_STORAGE==PackageManager.PERMISSION_GRANTED
+                && permissionCheck_READ_EXTERNAL_STORAGE==PackageManager.PERMISSION_GRANTED){
                 //this means permission is granted and you can do read and write
             }else{
                 ActivityCompat.requestPermissions((context as UTubeDActivity),
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_WRITE_PERMISSION);
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_WRITE_PERMISSION);
             }
 
             val builder = AlertDialog.Builder(context)
@@ -123,6 +128,8 @@ class ListVideosAdapter(val context : Context, val videos : List<Video>) :  Recy
                         (context as Activity).findViewById<ImageView>(R.id.icon_search_btn).isEnabled = false
                         (context as Activity).findViewById<ImageView>(R.id.mic_search_btn).isEnabled = false
 
+                        (context as Activity).findViewById<TextView>(R.id.tv_event_download).text = context.getString(R.string.status_1)
+
                         val downloadVideo = DownloadVideo(video.id)
 
                         AuthObj.thread = ThreadProgressBar((context as Activity).findViewById<ProgressBar>(R.id.pb_download_video))
@@ -135,7 +142,7 @@ class ListVideosAdapter(val context : Context, val videos : List<Video>) :  Recy
                                     if (messaggio.size > 0 ) {
 
                                         try {
-
+                                            (context as Activity).findViewById<TextView>(R.id.tv_event_download).text = context.getString(R.string.status_2)
                                             val localIntent = Intent(BROADCAST_DOWNLOAD_VIDEO)
 
                                             localIntent.putExtra(PAYLOAD_DOWNLOAD, messaggio)
