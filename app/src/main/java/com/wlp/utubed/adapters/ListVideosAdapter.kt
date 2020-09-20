@@ -120,60 +120,14 @@ class ListVideosAdapter(val context : Context, val videos : List<Video>) :  Recy
             builder.setView(dialogView)
 
                 .setPositiveButton("Scarica", { dialog: DialogInterface?, which: Int ->
-                    (context as Activity).runOnUiThread {
 
-                        (context as Activity).findViewById<ProgressBar>(R.id.pb_download_video).visibility = View.VISIBLE
-                        (context as Activity).findViewById<RecyclerView>(R.id.videoListView).isEnabled = false
-                        (context as Activity).findViewById<TextView>(R.id.nameFindTxt).isEnabled = false
-                        (context as Activity).findViewById<ImageView>(R.id.icon_search_btn).isEnabled = false
-                        (context as Activity).findViewById<ImageView>(R.id.mic_search_btn).isEnabled = false
+                    val localIntent = Intent(BROADCAST_DOWNLOAD_VIDEO)
 
-                        (context as Activity).findViewById<TextView>(R.id.tv_event_download).text = context.getString(R.string.status_1)
+                    localIntent.putExtra(INTENT_ID_VIDEO,video.id)
+                    localIntent.putExtra(INTENT_TITLE,video.title)
 
-                        val downloadVideo = DownloadVideo(video.id)
-
-                        AuthObj.thread = ThreadProgressBar((context as Activity).findViewById<ProgressBar>(R.id.pb_download_video))
-                        AuthObj.thread!!.loading()
-
-                        VideoService.downloadVideo(context
-                            , downloadVideo,
-                            { esito: Boolean, messaggio: ByteArray ->
-                                if (esito) {
-                                    if (messaggio.size > 0 ) {
-
-                                        try {
-                                            (context as Activity).findViewById<TextView>(R.id.tv_event_download).text = context.getString(R.string.status_2)
-                                            val localIntent = Intent(BROADCAST_DOWNLOAD_VIDEO)
-
-                                            localIntent.putExtra(PAYLOAD_DOWNLOAD, messaggio)
-                                            localIntent.putExtra("title", video.title)
-
-                                            LocalBroadcastManager.getInstance(context)
-                                                .sendBroadcast(localIntent)
-
-                                        } catch (e: Exception) {
-                                            Toast.makeText(
-                                                context,
-                                                "error : ${e.message}",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                            (context as Activity).findViewById<ProgressBar>(R.id.pb_download_video).visibility =
-                                                View.INVISIBLE
-                                        }
-                                    }
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        "error : $messaggio",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    (context as Activity).findViewById<ProgressBar>(R.id.pbFindVideos).visibility =
-                                        View.INVISIBLE
-                                }
-
-                            })
-
-                    }})
+                   LocalBroadcastManager.getInstance(context).sendBroadcast(localIntent)
+                })
                 .setNegativeButton("cancella", { dialog: DialogInterface?, which: Int ->
 
                 }).create().show()

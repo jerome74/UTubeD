@@ -2,6 +2,7 @@ package com.wlp.utubed.util
 
 import android.app.Activity
 import android.os.Build
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import com.wlp.utubed.R
 import com.wlp.utubed.domain.AuthObj
@@ -20,14 +21,9 @@ object Converter
 
         if(AuthObj.fileTypeDownloadVideo.equals(FILE_TYPE_VIDEO))
         {
-            activity.tv_event_download.text = activity.getString(R.string.status_5)
             target.writeBytes(mp4Stream)
-            activity.tv_event_download.text = activity.getString(R.string.status_6)
-
             return
         }
-
-        activity.tv_event_download.text = activity.getString(R.string.status_3)
 
         val source = kotlin.io.createTempFile("videos_",".mp4", File(downloadDir))
 
@@ -35,6 +31,6 @@ object Converter
 
         AudioExtractor().genVideoUsingMuxer(source.absolutePath, target.absolutePath, -1, -1, true, false);
 
-        source.deleteOnExit()
+        source.delete()
     }
 }

@@ -33,8 +33,9 @@ class LoginActivity : AppCompatActivity() {
     fun onLoginBtnClicked(view : View){
 
         val user : User = User(nameLoginTxt.text.toString(),passLoginTxt2.text.toString())
-        if(cb_notifica_wa.isChecked) AuthObj.notify = "true"
-        else AuthObj.notify = "false"
+        //if(cb_notifica_wa.isChecked) AuthObj.notify = "true"
+        //else
+        AuthObj.notify = "false"
         manageSpinner(false, View.VISIBLE)
         hideKeyboard()
         callLoginUser(user)

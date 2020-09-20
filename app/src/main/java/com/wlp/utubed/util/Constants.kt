@@ -24,6 +24,13 @@ const val FILE_TYPE_VIDEO = "mp4"
 const val LANGUAGE_IT = "it-IT"
 const val LANGUAGE_EN = "en-EN"
 
+/**
+ * INTENT
+ */
+
+const val INTENT_ID_VIDEO = "INTENT_9999"
+const val INTENT_TITLE = "INTENT_9998"
+
 
 
 /**

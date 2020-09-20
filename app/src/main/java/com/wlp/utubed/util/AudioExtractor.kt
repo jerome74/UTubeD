@@ -57,7 +57,7 @@ class AudioExtractor {
 
             var  selectCurrentTrack = false;
 
-            if (mime.startsWith("video/") && useAudio) {
+            if (mime.startsWith("audio/") && useAudio) {
                 selectCurrentTrack = true;
             }
             if (selectCurrentTrack) {

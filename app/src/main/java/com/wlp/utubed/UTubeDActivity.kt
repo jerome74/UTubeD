@@ -15,6 +15,7 @@ import android.text.Html
 import android.text.SpannableStringBuilder
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.ImageView
@@ -61,6 +62,8 @@ class UTubeDActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
 
         supportActionBar?.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
@@ -393,24 +396,49 @@ class UTubeDActivity : AppCompatActivity() {
         {
             try
             {
-                val decode = intent!!.getByteArrayExtra(PAYLOAD_DOWNLOAD)
+                val id = intent!!.getStringExtra(INTENT_ID_VIDEO)
+                val title = intent!!.getStringExtra(INTENT_TITLE)
 
-                tv_event_download.text = ""
-                tv_event_download.text = getString(R.string.status_3)
+                runOnUiThread {
 
-                Converter.mp4ConvertTo(decode, intent!!.getStringExtra("title"), this@UTubeDActivity)
+                    manageSpinnerH(View.VISIBLE, false)
 
-                AuthObj.thread!!.finish = true
+                    tv_event_download.text = getString(R.string.status_1)
 
-                AuthObj.thread = null
+                    var thread : ThreadProgressBar = ThreadProgressBar(pb_download_video)
+                    thread.start()
 
-                tv_event_download.text= ""
+                    val downloadVideo = DownloadVideo(id)
 
-                Toast.makeText(this@UTubeDActivity, "download successfully in /storage/emulated/0/Download", Toast.LENGTH_LONG).show()
+                    VideoService.downloadVideo(this@UTubeDActivity
+                        , downloadVideo,
+                        { esito: Boolean, messaggio: ByteArray ->
+                            if (esito) {
+                                if (messaggio.size > 0 ) {
+                                    try
+                                    {
+                                        Converter.mp4ConvertTo(messaggio, title, this@UTubeDActivity)
 
-                manageSpinnerH(View.INVISIBLE, true)
+                                        thread.finish = true
 
-                pb_download_video.progress = 0
+                                        Toast.makeText(this@UTubeDActivity, "download successfully in /storage/emulated/0/Download", Toast.LENGTH_LONG).show()
+
+                                        tv_event_download.text.drop(tv_event_download.text.length)
+                                        tv_event_download.text= getString(R.string.status_ini)
+
+                                        manageSpinnerH(View.INVISIBLE, true)
+                                    }
+                                    catch (e: Exception) {
+                                        Toast.makeText(context, "error : ${e.message}", Toast.LENGTH_SHORT).show()
+                                        manageSpinnerH(View.INVISIBLE, true)
+                                    }
+                                }
+                            } else {
+                                Toast.makeText(context, "error : $messaggio", Toast.LENGTH_SHORT).show()
+                                manageSpinnerH(View.INVISIBLE, true)
+                            }
+                        })
+                }
              }
             catch(e : Exception){
                 Toast.makeText(this@UTubeDActivity, "error : ${e.message}", Toast.LENGTH_SHORT).show()

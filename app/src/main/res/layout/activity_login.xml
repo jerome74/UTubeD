@@ -70,7 +70,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <CheckBox
+    <!--CheckBox
         android:id="@+id/cb_notifica_wa"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -80,6 +80,6 @@
         android:text="Invio con Whatsapp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/FindinBtn" />
+        app:layout_constraintTop_toBottomOf="@+id/FindinBtn" / -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
