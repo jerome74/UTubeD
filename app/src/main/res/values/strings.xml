@@ -26,17 +26,22 @@
     <string name="video">" Video "</string>
     <string name="english">" eng "</string>
     <string name="status_ini"></string>
-    <string name="status_1">Inizio Download</string>
-    <string name="status_2">Fine Download</string>
-    <string name="status_3">Inizio Conversione</string>
-    <string name="status_4">Fine Conversione</string>
-    <string name="status_5">Inizio Salvataggio File</string>
-    <string name="status_6">Fine Salvataggio File</string>
+    <string name="status_1"> Inizio\n\n Download </string>
+    <string name="status_2"> Fine\n\n Download </string>
+    <string name="status_3"> Inizio\n\n Conversione </string>
+    <string name="status_4"> Fine\n\n Conversione </string>
+    <string name="status_5"> Inizio\n\n Salvataggio File </string>
+    <string name="status_6"> Fine\n\n Salvataggio File </string>
+    <string name="status_7">Elaborazione</string>
+    <string name="log_in">Log-In</string>
+    <string name="biometric">Biometrica</string>
+    <string name="client_id">guest</string>
+    <string name="secret_id">guest</string>
 
     <string-array name="type_file">
-            <item>mp3</item>
-            <item>mp4</item>
-        </string-array>
+        <item>mp3</item>
+        <item>mp4</item>
+    </string-array>
 
     <string-array name="type_language">
         <item>It</item>

@@ -5,11 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/music_nv"
-    tools:context=".controller.LoginActivity">
+    tools:context=".activities.SigninActivity">
 
 
     <EditText
-        android:id="@+id/nameLoginTxt"
+        android:id="@+id/nameSigninTxt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -23,7 +23,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/passLoginTxtLay"
+        android:id="@+id/passSigninTxtLay"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -34,11 +34,11 @@
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nameLoginTxt"
+        app:layout_constraintTop_toBottomOf="@+id/nameSigninTxt"
         app:passwordToggleEnabled="true">
 
         <EditText
-            android:id="@+id/passLoginTxt"
+            android:id="@+id/passSigninTxt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="password" />
@@ -46,19 +46,19 @@
 
 
     <Button
-        android:id="@+id/LoginBtn"
+        android:id="@+id/SigninBtn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:background="@drawable/background_color_button"
-        android:onClick="onLoginBtnClicked"
-        android:text="Log-In"
+        android:onClick="onSigninBtnClicked"
+        android:text="@string/signin"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passLoginTxtLay" />
-
+        app:layout_constraintTop_toBottomOf="@+id/nicnameSigninTxt" />
 
     <ProgressBar
         android:id="@+id/SigninProgBar"
@@ -70,21 +70,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/BioBtn"
+    <EditText
+        android:id="@+id/nicnameSigninTxt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginLeft="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
         android:layout_marginRight="24dp"
-        android:background="@drawable/background_color_button"
-        android:onClick="onBioBtnClicked"
-        android:text="@string/biometric"
+        android:ems="10"
+        android:hint="nicname"
+        android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/LoginBtn" />
+        app:layout_constraintTop_toBottomOf="@+id/passSigninTxtLay" />
 
     <!--CheckBox
         android:id="@+id/cb_notifica_wa"

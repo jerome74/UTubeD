@@ -1,6 +1,5 @@
 package com.wlp.utubed
 
-import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -9,15 +8,11 @@ import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.speech.RecognizerIntent
 import android.text.Html
 import android.text.SpannableStringBuilder
-import android.view.MenuItem
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import android.view.inputmethod.InputMethodManager
-import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -32,6 +27,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.navigation.NavigationView
 import com.wlp.utubed.activities.LoginActivity
+import com.wlp.utubed.activities.SigninActivity
 import com.wlp.utubed.adapters.ListVideosAdapter
 import com.wlp.utubed.domain.AuthObj
 import com.wlp.utubed.model.UserObj
@@ -227,6 +223,25 @@ class UTubeDActivity : AppCompatActivity() {
         }
     }
 
+    fun onSigninBntClicked(view : MenuItem) {
+
+        if (!AuthObj.isLoggIn) {
+            val intentSignin: Intent = Intent(this, SigninActivity::class.java)
+            startActivity(intentSignin)
+        } else {
+
+
+            var nav_view = findViewById<NavigationView>(R.id.nav_view)
+            nav_view.menu.findItem(R.id.loginItem).setTitle("log-In");
+            nav_view.menu.findItem(R.id.loginItem).setIcon(android.R.drawable.ic_secure)
+            emailTxt.text = ""
+            userImg.setImageResource(R.mipmap.profiledefault)
+
+            UserObj.reset()
+            AuthObj.reset()
+        }
+    }
+
     fun onMicSearchBtnClick(view: View) {
 
         if (!AuthObj.isLoggIn) {
@@ -403,10 +418,7 @@ class UTubeDActivity : AppCompatActivity() {
 
                     manageSpinnerH(View.VISIBLE, false)
 
-                    tv_event_download.text = getString(R.string.status_1)
-
-                    var thread : ThreadProgressBar = ThreadProgressBar(pb_download_video)
-                    thread.start()
+                    tv_event_download.text = getString(R.string.status_7)
 
                     val downloadVideo = DownloadVideo(id)
 
@@ -417,11 +429,11 @@ class UTubeDActivity : AppCompatActivity() {
                                 if (messaggio.size > 0 ) {
                                     try
                                     {
+                                        ToastCustom.show(this@UTubeDActivity,getString(R.string.status_2))
+
                                         Converter.mp4ConvertTo(messaggio, title, this@UTubeDActivity)
 
-                                        thread.finish = true
-
-                                        Toast.makeText(this@UTubeDActivity, "download successfully in /storage/emulated/0/Download", Toast.LENGTH_LONG).show()
+                                        ToastCustom.show(this@UTubeDActivity,"download successfully in /storage/emulated/0/Download")
 
                                         tv_event_download.text.drop(tv_event_download.text.length)
                                         tv_event_download.text= getString(R.string.status_ini)

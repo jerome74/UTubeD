@@ -70,7 +70,7 @@ object VideoService
             } , mapHeader)
 
         volleyMultipartRequest.setRetryPolicy(DefaultRetryPolicy(
-            (5 * 60 * 1000),
+            ((5 * 60) * 1000),
             DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
             DefaultRetryPolicy.DEFAULT_BACKOFF_MULT))
 

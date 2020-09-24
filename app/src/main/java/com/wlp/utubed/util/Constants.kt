@@ -43,6 +43,7 @@ const val BASE_URL : String = "https://utubed.herokuapp.com"
 
 
 const val URI_LOGIN : String = "$BASE_URL/login"
+const val URI_SIGNIN : String = "$BASE_URL/api/utubed/signin"
 const val URI_FIND_BY_EMAIL : String = "$BASE_URL/api/utubed/profile"
 const val URI_FIND_VIDEOS : String = "$BASE_URL/api/utubed/find"
 const val URI_DOWNLOAD_VIDEO : String = "$BASE_URL/api/utubed/download"

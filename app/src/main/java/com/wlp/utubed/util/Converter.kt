@@ -29,7 +29,11 @@ object Converter
 
         source.writeBytes(mp4Stream)
 
+        ToastCustom.show(activity,activity.getString(R.string.status_3))
+
         AudioExtractor().genVideoUsingMuxer(source.absolutePath, target.absolutePath, -1, -1, true, false);
+
+        ToastCustom.show(activity,activity.getString(R.string.status_4))
 
         source.delete()
     }

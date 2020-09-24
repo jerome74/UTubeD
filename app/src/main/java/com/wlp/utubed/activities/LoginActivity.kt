@@ -4,9 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.wlp.utubed.R
 import com.wlp.utubed.domain.AuthObj
@@ -22,17 +25,64 @@ import org.json.JSONObject
 
 class LoginActivity : AppCompatActivity() {
 
+    lateinit var biometricPrompt : BiometricPrompt
+    lateinit var promptInfo : BiometricPrompt.PromptInfo
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
         manageSpinner(true, View.INVISIBLE)
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        val executor = ContextCompat.getMainExecutor(this)
+        biometricPrompt = BiometricPrompt(this, executor,
+            object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationError(errorCode: Int,
+                                                   errString: CharSequence) {
+                    super.onAuthenticationError(errorCode, errString)
+                    Toast.makeText(applicationContext,
+                        "Authentication error: $errString", Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                override fun onAuthenticationSucceeded(
+                    result: BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
+
+                    val user : User = User(getString(R.string.client_id),getString(R.string.secret_id))
+                    //if(cb_notifica_wa.isChecked) AuthObj.notify = "true"
+                    //else
+                    AuthObj.notify = "false"
+                    manageSpinner(false, View.VISIBLE)
+                    hideKeyboard()
+                    callLoginUser(user)
+                }
+
+                override fun onAuthenticationFailed() {
+                    super.onAuthenticationFailed()
+                    Toast.makeText(applicationContext, "Authentication failed",
+                        Toast.LENGTH_SHORT)
+                        .show()
+                }
+            })
+
+         promptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle("Biometric login for my app")
+            .setSubtitle("Log in using your biometric credential")
+            .setNegativeButtonText("Use account password")
+            .build()
+
+
+
+
     }
 
 
     fun onLoginBtnClicked(view : View){
 
-        val user : User = User(nameLoginTxt.text.toString(),passLoginTxt2.text.toString())
+        val user : User = User(nameLoginTxt.text.toString(),passLoginTxt.text.toString())
         //if(cb_notifica_wa.isChecked) AuthObj.notify = "true"
         //else
         AuthObj.notify = "false"
@@ -40,6 +90,10 @@ class LoginActivity : AppCompatActivity() {
         hideKeyboard()
         callLoginUser(user)
 
+    }
+
+    fun onBioBtnClicked(view : View){
+        biometricPrompt.authenticate(promptInfo)
     }
 
 
@@ -118,11 +172,12 @@ class LoginActivity : AppCompatActivity() {
 
     fun manageSpinner(enable: Boolean, visibility : Int)
     {
-        FindReservBar.visibility = visibility;
+        SigninProgBar.visibility = visibility;
 
         nameLoginTxt.isEnabled    = enable
         passLoginTxt.isEnabled   = enable
-        FindinBtn.isEnabled = enable
+        LoginBtn.isEnabled = enable
+        BioBtn.isEnabled = enable
     }
 
 
