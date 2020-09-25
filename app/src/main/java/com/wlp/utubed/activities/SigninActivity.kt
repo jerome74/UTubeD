@@ -42,17 +42,17 @@ class SigninActivity : AppCompatActivity() {
                     if (esito) {
                         try {
                             AuthObj.isLoggIn = true
-                            ToastCustom.show(this@SigninActivity,"user registered, check in your email.")
+                            ToastCustom.show(this@SigninActivity,getString(R.string.email_check))
                             manageSpinner(true, View.INVISIBLE)
                             finish()
 
                         } catch (e: Exception) {
-                            ToastCustom.show(this@SigninActivity,"signin error : ${e.message}")
+                            ToastCustom.show(this@SigninActivity,getString(R.string.signin_error ,e.message))
                             manageSpinner(true, View.INVISIBLE)
                         }
 
                     } else {
-                        ToastCustom.show(this@SigninActivity,"signin error")
+                        ToastCustom.show(this@SigninActivity,getString(R.string.signin_failed ,messaggio))
                         manageSpinner(true, View.INVISIBLE)
                     }
                 })

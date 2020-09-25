@@ -4,6 +4,7 @@ import android.content.Context
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Response
 import com.android.volley.toolbox.Volley
+import com.wlp.utubed.R
 import com.wlp.utubed.model.BaseStringPostRequest
 import com.wlp.utubed.models.UserSingIn
 import com.wlp.utubed.util.URI_SIGNIN
@@ -24,7 +25,7 @@ object SigninService {
                 try {
                     complete(false, error.message!!)
                 }catch (e : Exception){
-                    complete(false, "impossible to register account.")
+                    complete(false, context.getString(R.string.msg_signin_fail))
                 }
             } , null )
 

@@ -12,7 +12,7 @@
             android:state_checked="true"/>
         <item
             android:id="@+id/signinItem"
-            android:icon="@android:drawable/ic_search_category_default"
+            android:icon="@android:drawable/ic_menu_edit"
             android:onClick="onSigninBntClicked"
             android:state_checked="true"
             android:title="@string/signin" />

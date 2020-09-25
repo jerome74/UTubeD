@@ -102,13 +102,11 @@ class AudioExtractor {
             bufferInfo.offset = offset;
             bufferInfo.size = extractor.readSampleData(dstBuf, offset);
             if (bufferInfo.size < 0) {
-                Log.d(TAG, "Saw input EOS.");
                 bufferInfo.size = 0;
                 break;
             } else {
                 bufferInfo.presentationTimeUs = extractor.getSampleTime();
                 if (endMs > 0 && bufferInfo.presentationTimeUs > (endMs * 1000)) {
-                    Log.d(TAG, "The current sample is over the trim end time.");
                     break;
                 } else {
                     bufferInfo.flags = extractor.getSampleFlags();

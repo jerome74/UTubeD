@@ -54,7 +54,7 @@
         android:layout_marginEnd="24dp"
         android:background="@drawable/background_color_button"
         android:onClick="onLoginBtnClicked"
-        android:text="Log-In"
+        android:text="@string/log_in"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/passLoginTxtLay" />

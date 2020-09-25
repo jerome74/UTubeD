@@ -4,6 +4,7 @@ import android.content.Context
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Response
 import com.android.volley.toolbox.Volley
+import com.wlp.utubed.R
 import com.wlp.utubed.model.BaseStringPostLoginRequest
 import com.wlp.utubed.model.BaseStringPostRequest
 import com.wlp.utubed.model.User
@@ -27,8 +28,7 @@ object LoginService {
                 try {
                     complete(false, error.message!!)
                 }catch (e : Exception){
-                    //Toast.makeText(context, "email and/or password incorrect.", Toast.LENGTH_SHORT).show()
-                    complete(false, "email and/or password incorrect.")
+                    complete(false, context.getString(R.string.msg_login_fail))
                 }
             } , null )
 

@@ -119,7 +119,7 @@ class ListVideosAdapter(val context : Context, val videos : List<Video>) :  Recy
 
             builder.setView(dialogView)
 
-                .setPositiveButton("Scarica", { dialog: DialogInterface?, which: Int ->
+                .setPositiveButton(context.getString(R.string.download), { dialog: DialogInterface?, which: Int ->
 
                     val localIntent = Intent(BROADCAST_DOWNLOAD_VIDEO)
 
@@ -128,7 +128,7 @@ class ListVideosAdapter(val context : Context, val videos : List<Video>) :  Recy
 
                    LocalBroadcastManager.getInstance(context).sendBroadcast(localIntent)
                 })
-                .setNegativeButton("cancella", { dialog: DialogInterface?, which: Int ->
+                .setNegativeButton(context.getString(R.string.cancel), { dialog: DialogInterface?, which: Int ->
 
                 }).create().show()
         })

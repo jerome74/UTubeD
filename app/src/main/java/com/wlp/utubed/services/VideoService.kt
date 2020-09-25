@@ -1,5 +1,6 @@
 package com.wlp.utubed.services
 
+import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.widget.Toast
@@ -7,6 +8,7 @@ import com.android.volley.DefaultRetryPolicy
 import com.android.volley.NetworkResponse
 import com.android.volley.Response
 import com.android.volley.toolbox.Volley
+import com.wlp.utubed.R
 import com.wlp.utubed.UTubeDActivity
 import com.wlp.utubed.activities.LoginActivity
 import com.wlp.utubed.domain.AuthObj
@@ -15,6 +17,7 @@ import com.wlp.utubed.model.BaseStringPostRequest
 import com.wlp.utubed.models.DownloadVideo
 import com.wlp.utubed.models.FindVideos
 import com.wlp.utubed.network.VolleyMultipartRequest
+import com.wlp.utubed.util.ToastCustom
 import com.wlp.utubed.util.URI_DOWNLOAD_VIDEO
 import com.wlp.utubed.util.URI_FIND_VIDEOS
 
@@ -65,7 +68,7 @@ object VideoService
                     complete(false, error.cause.toString().toByteArray())
                 }catch (e : java.lang.Exception)
                 {
-                    Toast.makeText(context, "error download file", Toast.LENGTH_SHORT).show()
+                    ToastCustom.show(context as Activity,context.getString(R.string.error_download))
                 }
             } , mapHeader)
 

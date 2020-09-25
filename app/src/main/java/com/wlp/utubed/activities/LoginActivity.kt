@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
@@ -20,6 +19,7 @@ import com.wlp.utubed.model.UserProfile
 import com.wlp.utubed.service.EmailService
 import com.wlp.utubed.service.LoginService
 import com.wlp.utubed.util.BROADCAST_LOGIN
+import com.wlp.utubed.util.ToastCustom
 import kotlinx.android.synthetic.main.activity_login.*
 import org.json.JSONObject
 
@@ -42,9 +42,7 @@ class LoginActivity : AppCompatActivity() {
                 override fun onAuthenticationError(errorCode: Int,
                                                    errString: CharSequence) {
                     super.onAuthenticationError(errorCode, errString)
-                    Toast.makeText(applicationContext,
-                        "Authentication error: $errString", Toast.LENGTH_SHORT)
-                        .show()
+                    ToastCustom.show(this@LoginActivity,getString(R.string.auth_error, errString))
                 }
 
                 override fun onAuthenticationSucceeded(
@@ -52,9 +50,8 @@ class LoginActivity : AppCompatActivity() {
                     super.onAuthenticationSucceeded(result)
 
                     val user : User = User(getString(R.string.client_id),getString(R.string.secret_id))
-                    //if(cb_notifica_wa.isChecked) AuthObj.notify = "true"
-                    //else
-                    AuthObj.notify = "false"
+
+                    AuthObj.notify = getString(R.string._false_)
                     manageSpinner(false, View.VISIBLE)
                     hideKeyboard()
                     callLoginUser(user)
@@ -62,16 +59,14 @@ class LoginActivity : AppCompatActivity() {
 
                 override fun onAuthenticationFailed() {
                     super.onAuthenticationFailed()
-                    Toast.makeText(applicationContext, "Authentication failed",
-                        Toast.LENGTH_SHORT)
-                        .show()
+                    ToastCustom.show(this@LoginActivity,getString(R.string.auth_failed))
                 }
             })
 
          promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Biometric login for my app")
-            .setSubtitle("Log in using your biometric credential")
-            .setNegativeButtonText("Use account password")
+            .setTitle(getString(R.string.bio_title))
+            .setSubtitle(getString(R.string.bio_subtitle))
+            .setNegativeButtonText(getString(R.string.bio_neg_btn))
             .build()
 
 
@@ -85,7 +80,7 @@ class LoginActivity : AppCompatActivity() {
         val user : User = User(nameLoginTxt.text.toString(),passLoginTxt.text.toString())
         //if(cb_notifica_wa.isChecked) AuthObj.notify = "true"
         //else
-        AuthObj.notify = "false"
+        AuthObj.notify = getString(R.string._false_)
         manageSpinner(false, View.VISIBLE)
         hideKeyboard()
         callLoginUser(user)
@@ -110,17 +105,16 @@ class LoginActivity : AppCompatActivity() {
                     if (esito) {
                         try {
                             AuthObj.isLoggIn = true
-                            Toast.makeText(this, "user Login successfully", Toast.LENGTH_SHORT)
-                                .show()
+                            ToastCustom.show(this@LoginActivity,getString(R.string.login_success))
                             callFindProfileByEmail(user)
 
                         } catch (e: Exception) {
-                            Toast.makeText(this, "error : ${e.message}", Toast.LENGTH_SHORT).show()
+                            ToastCustom.show(this@LoginActivity,getString(R.string.login_error,e.message))
                             manageSpinner(true, View.INVISIBLE)
                         }
 
                     } else {
-                        Toast.makeText(this, "login error : $messaggio", Toast.LENGTH_SHORT).show()
+                        ToastCustom.show(this@LoginActivity,getString(R.string.login_failed, messaggio))
                         manageSpinner(true, View.INVISIBLE)
                     }
 
@@ -148,19 +142,19 @@ class LoginActivity : AppCompatActivity() {
                         UserObj.userProfile = userProfile
                         manageSpinner(true, View.INVISIBLE)
                         LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(BROADCAST_LOGIN))
+
+                        ToastCustom.show(this@LoginActivity,getString(R.string.profile_found_success))
                         finish()
 
-                        Toast.makeText(this, "profile found successfully", Toast.LENGTH_SHORT).show()
-
                     }catch(e : Exception){
-                        Toast.makeText(this, "error : ${e.message}", Toast.LENGTH_SHORT).show()
+                        ToastCustom.show(this@LoginActivity,getString(R.string.profile_found_error,e.message))
                         manageSpinner(true, View.INVISIBLE)
                     }
 
                 }
                 else
                 {
-                    Toast.makeText(this, "profile found error : $messaggio", Toast.LENGTH_SHORT).show()
+                    ToastCustom.show(this@LoginActivity,getString(R.string.profile_found_failed,messaggio))
                     manageSpinner(true, View.INVISIBLE)
                     finish()
                 }

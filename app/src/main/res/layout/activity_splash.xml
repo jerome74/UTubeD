@@ -39,7 +39,7 @@
         android:layout_width="139dp"
         android:layout_height="24dp"
         android:fontFamily="@font/montserrat"
-        android:text="downloader"
+        android:text="@string/downloader"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textStyle="bold"

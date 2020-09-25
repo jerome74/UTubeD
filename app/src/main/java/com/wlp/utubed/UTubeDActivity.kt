@@ -139,7 +139,7 @@ class UTubeDActivity : AppCompatActivity() {
             {
                 emailTxt.text = UserObj.userProfile?.nickname
                 var nav_view = findViewById<NavigationView>(R.id.nav_view)
-                nav_view.menu.findItem(R.id.loginItem).setTitle("Log-out");
+                nav_view.menu.findItem(R.id.loginItem).setTitle(getString(R.string.logout));
                 nav_view.menu.findItem(R.id.loginItem).setIcon(android.R.drawable.ic_partial_secure)
 
                 val identifier = resources.getIdentifier(UserObj.userProfile?.avatarname,"mipmap",packageName)
@@ -162,7 +162,7 @@ class UTubeDActivity : AppCompatActivity() {
 
             var nav_view = findViewById<NavigationView>(R.id.nav_view)
 
-            nav_view.menu.findItem(R.id.loginItem).setTitle("Log-out");
+            nav_view.menu.findItem(R.id.loginItem).setTitle(getString(R.string.logout));
             nav_view.menu.findItem(R.id.loginItem).setIcon(android.R.drawable.ic_partial_secure)
 
 
@@ -186,7 +186,7 @@ class UTubeDActivity : AppCompatActivity() {
 
         if (!AuthObj.isLoggIn) {
 
-            Toast.makeText(this, "eseguire il Login!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.do_login), Toast.LENGTH_SHORT).show()
 
         }else {
 
@@ -197,7 +197,7 @@ class UTubeDActivity : AppCompatActivity() {
 
         if (!AuthObj.isLoggIn) {
 
-            Toast.makeText(this, "eseguire il Login!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.do_login), Toast.LENGTH_SHORT).show()
 
         }else {
 
@@ -213,7 +213,7 @@ class UTubeDActivity : AppCompatActivity() {
 
 
             var nav_view = findViewById<NavigationView>(R.id.nav_view)
-            nav_view.menu.findItem(R.id.loginItem).setTitle("log-In");
+            nav_view.menu.findItem(R.id.loginItem).setTitle(getString(R.string.login));
             nav_view.menu.findItem(R.id.loginItem).setIcon(android.R.drawable.ic_secure)
             emailTxt.text = ""
             userImg.setImageResource(R.mipmap.profiledefault)
@@ -232,7 +232,7 @@ class UTubeDActivity : AppCompatActivity() {
 
 
             var nav_view = findViewById<NavigationView>(R.id.nav_view)
-            nav_view.menu.findItem(R.id.loginItem).setTitle("log-In");
+            nav_view.menu.findItem(R.id.loginItem).setTitle(getString(R.string.login));
             nav_view.menu.findItem(R.id.loginItem).setIcon(android.R.drawable.ic_secure)
             emailTxt.text = ""
             userImg.setImageResource(R.mipmap.profiledefault)
@@ -245,10 +245,10 @@ class UTubeDActivity : AppCompatActivity() {
     fun onMicSearchBtnClick(view: View) {
 
         if (!AuthObj.isLoggIn) {
-            Toast.makeText(this, "eseguire il Login!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.do_login), Toast.LENGTH_SHORT).show()
         }
         if (language.isNullOrEmpty()) {
-            Toast.makeText(this, "select language", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.select_language), Toast.LENGTH_SHORT).show()
         }
         else
         {
@@ -272,7 +272,7 @@ class UTubeDActivity : AppCompatActivity() {
                 val listWords = data!!.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
 
                 if(listWords.size == 0 )
-                    Toast.makeText(this, "no vaild word", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.no_vaild_word), Toast.LENGTH_SHORT).show()
                 else
                 {
                     val message = listWords.get(0)
@@ -285,18 +285,18 @@ class UTubeDActivity : AppCompatActivity() {
     fun onIconSearchBtnClick(view: View) {
 
         if (!AuthObj.isLoggIn) {
-            Toast.makeText(this, "eseguire il Login!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.do_login), Toast.LENGTH_SHORT).show()
         }
         else
         {
             if(nameFindTxt.text.toString().trim().isNullOrEmpty())
             {
-                Toast.makeText(this, "inserire il nome del video da ricercare!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.insert_title_video), Toast.LENGTH_SHORT).show()
                 return
             }
             if(fileTypeDownloadVideo.isNullOrEmpty())
             {
-                Toast.makeText(this, "select type of dwonload", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.select_type_dwonload), Toast.LENGTH_SHORT).show()
                 return
             }
 
@@ -371,20 +371,15 @@ class UTubeDActivity : AppCompatActivity() {
                             LocalBroadcastManager.getInstance(this)
                                 .sendBroadcast(Intent(BROADCAST_FIND_VIDEOS))
 
-                            Toast.makeText(this, "videos found successfully", Toast.LENGTH_SHORT)
-                                .show()
+                            ToastCustom.show(this,getString(R.string.videos_found_successfully))
 
                         } catch (e: Exception) {
-                            Toast.makeText(this, "error : ${e.message}", Toast.LENGTH_SHORT).show()
+                            ToastCustom.show(this,getString(R.string.find_file_error, e.message))
                             manageSpinner(true, View.INVISIBLE)
                         }
 
                     } else {
-                        Toast.makeText(
-                            this,
-                            "videos found by error : $messaggio",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        ToastCustom.show(this,getString(R.string.find_file_failed, messaggio))
                         manageSpinner(true, View.INVISIBLE)
                     }
                 })
@@ -433,7 +428,7 @@ class UTubeDActivity : AppCompatActivity() {
 
                                         Converter.mp4ConvertTo(messaggio, title, this@UTubeDActivity)
 
-                                        ToastCustom.show(this@UTubeDActivity,"download successfully in /storage/emulated/0/Download")
+                                        ToastCustom.show(this@UTubeDActivity,getString(R.string.download_success))
 
                                         tv_event_download.text.drop(tv_event_download.text.length)
                                         tv_event_download.text= getString(R.string.status_ini)
@@ -441,19 +436,19 @@ class UTubeDActivity : AppCompatActivity() {
                                         manageSpinnerH(View.INVISIBLE, true)
                                     }
                                     catch (e: Exception) {
-                                        Toast.makeText(context, "error : ${e.message}", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this@UTubeDActivity,getString(R.string.download_error, e.message), Toast.LENGTH_SHORT).show()
                                         manageSpinnerH(View.INVISIBLE, true)
                                     }
                                 }
                             } else {
-                                Toast.makeText(context, "error : $messaggio", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@UTubeDActivity, getString(R.string.download_failed, messaggio), Toast.LENGTH_SHORT).show()
                                 manageSpinnerH(View.INVISIBLE, true)
                             }
                         })
                 }
              }
             catch(e : Exception){
-                Toast.makeText(this@UTubeDActivity, "error : ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@UTubeDActivity, getString(R.string.download_failed, e.message), Toast.LENGTH_SHORT).show()
             }
         }
     }
