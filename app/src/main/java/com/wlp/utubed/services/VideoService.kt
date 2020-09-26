@@ -39,7 +39,7 @@ object VideoService
             , Response.ErrorListener {
                     error -> try{complete(false, error.message!!)}catch (e: Exception){
                 (context as UTubeDActivity).manageSpinner(true, View.INVISIBLE)
-                Toast.makeText(context, "sessione scaduta!", Toast.LENGTH_SHORT).show() }
+                ToastCustom.show(context,context.getString(R.string.session_exparied))}
             } , mapHeader)
 
         baseStringRequest.setRetryPolicy(DefaultRetryPolicy(

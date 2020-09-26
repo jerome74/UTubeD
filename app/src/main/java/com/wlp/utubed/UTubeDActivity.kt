@@ -185,8 +185,7 @@ class UTubeDActivity : AppCompatActivity() {
     fun onSinginBntClicked(view : MenuItem) {
 
         if (!AuthObj.isLoggIn) {
-
-            Toast.makeText(this, getString(R.string.do_login), Toast.LENGTH_SHORT).show()
+            ToastCustom.show(this@UTubeDActivity,getString(R.string.do_login))
 
         }else {
 
@@ -197,7 +196,7 @@ class UTubeDActivity : AppCompatActivity() {
 
         if (!AuthObj.isLoggIn) {
 
-            Toast.makeText(this, getString(R.string.do_login), Toast.LENGTH_SHORT).show()
+            ToastCustom.show(this@UTubeDActivity,getString(R.string.do_login))
 
         }else {
 
@@ -245,10 +244,10 @@ class UTubeDActivity : AppCompatActivity() {
     fun onMicSearchBtnClick(view: View) {
 
         if (!AuthObj.isLoggIn) {
-            Toast.makeText(this, getString(R.string.do_login), Toast.LENGTH_SHORT).show()
+            ToastCustom.show(this@UTubeDActivity,getString(R.string.do_login))
         }
         if (language.isNullOrEmpty()) {
-            Toast.makeText(this, getString(R.string.select_language), Toast.LENGTH_SHORT).show()
+            ToastCustom.show(this@UTubeDActivity,getString(R.string.select_language))
         }
         else
         {
@@ -272,7 +271,7 @@ class UTubeDActivity : AppCompatActivity() {
                 val listWords = data!!.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
 
                 if(listWords.size == 0 )
-                    Toast.makeText(this, getString(R.string.no_vaild_word), Toast.LENGTH_SHORT).show()
+                    ToastCustom.show(this@UTubeDActivity,getString(R.string.no_vaild_word))
                 else
                 {
                     val message = listWords.get(0)
@@ -285,18 +284,18 @@ class UTubeDActivity : AppCompatActivity() {
     fun onIconSearchBtnClick(view: View) {
 
         if (!AuthObj.isLoggIn) {
-            Toast.makeText(this, getString(R.string.do_login), Toast.LENGTH_SHORT).show()
+            ToastCustom.show(this@UTubeDActivity,getString(R.string.do_login))
         }
         else
         {
             if(nameFindTxt.text.toString().trim().isNullOrEmpty())
             {
-                Toast.makeText(this, getString(R.string.insert_title_video), Toast.LENGTH_SHORT).show()
+                ToastCustom.show(this@UTubeDActivity,getString(R.string.insert_title_video))
                 return
             }
             if(fileTypeDownloadVideo.isNullOrEmpty())
             {
-                Toast.makeText(this, getString(R.string.select_type_dwonload), Toast.LENGTH_SHORT).show()
+                ToastCustom.show(this@UTubeDActivity,getString(R.string.select_type_dwonload))
                 return
             }
 
@@ -436,19 +435,19 @@ class UTubeDActivity : AppCompatActivity() {
                                         manageSpinnerH(View.INVISIBLE, true)
                                     }
                                     catch (e: Exception) {
-                                        Toast.makeText(this@UTubeDActivity,getString(R.string.download_error, e.message), Toast.LENGTH_SHORT).show()
+                                        ToastCustom.show(this@UTubeDActivity,getString(R.string.download_error,e.message))
                                         manageSpinnerH(View.INVISIBLE, true)
                                     }
                                 }
                             } else {
-                                Toast.makeText(this@UTubeDActivity, getString(R.string.download_failed, messaggio), Toast.LENGTH_SHORT).show()
+                                ToastCustom.show(this@UTubeDActivity,getString(R.string.download_error,messaggio))
                                 manageSpinnerH(View.INVISIBLE, true)
                             }
                         })
                 }
              }
             catch(e : Exception){
-                Toast.makeText(this@UTubeDActivity, getString(R.string.download_failed, e.message), Toast.LENGTH_SHORT).show()
+                ToastCustom.show(this@UTubeDActivity,getString(R.string.download_error,e.message))
             }
         }
     }

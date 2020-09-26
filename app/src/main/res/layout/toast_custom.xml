@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/background_black_tras"
-        android:fontFamily="@font/ds_digit"
+        android:fontFamily="@font/montserrat"
         android:gravity="center_horizontal"
         android:textColor="@color/colorAccent"
         android:textSize="24sp"
