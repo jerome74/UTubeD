@@ -22,6 +22,8 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.recyclerview.widget.GridLayoutManager
@@ -150,10 +152,18 @@ class UTubeDActivity : AppCompatActivity() {
                 rounded_1.isCircular = true;
 
                 userImg.setImageDrawable(rounded_1);
+
+                drawer_layout.closeDrawer(GravityCompat.START, false);
             }
         }
     }
 
+    override fun onBackPressed()  {
+        if(drawer_layout.isDrawerOpen(GravityCompat.START))
+            drawer_layout.closeDrawer(GravityCompat.START)
+        else
+            super.onBackPressed()
+    }
 
     fun notifyEventuallyLogin() {
 
