@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.speech.RecognizerIntent
 import android.text.Html
 import android.text.SpannableStringBuilder
@@ -410,7 +411,7 @@ class UTubeDActivity : AppCompatActivity() {
     }
 
     val videoDownloadReceiver = object : BroadcastReceiver() {
-        @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+        @RequiresApi(Build.VERSION_CODES.KITKAT)
         override fun onReceive(context: Context?, intent: Intent?)
         {
             try
@@ -435,9 +436,11 @@ class UTubeDActivity : AppCompatActivity() {
                                     {
                                         ToastCustom.show(this@UTubeDActivity,getString(R.string.status_2))
 
-                                        Converter.mp4ConvertTo(messaggio, title, this@UTubeDActivity)
+                                        val path = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)!!.absolutePath
 
-                                        ToastCustom.show(this@UTubeDActivity,getString(R.string.download_success))
+                                        Converter.mp4ConvertTo(messaggio, title, this@UTubeDActivity, path)
+
+                                        ToastCustom.show(this@UTubeDActivity,getString(R.string.download_success, path ))
 
                                         tv_event_download.text.drop(tv_event_download.text.length)
                                         tv_event_download.text= getString(R.string.status_ini)

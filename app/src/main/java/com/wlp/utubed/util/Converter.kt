@@ -2,6 +2,7 @@ package com.wlp.utubed.util
 
 import android.app.Activity
 import android.os.Build
+import android.os.Environment
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import com.wlp.utubed.R
@@ -11,13 +12,11 @@ import java.io.File
 
 object Converter
 {
-    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     @Throws(Exception::class)
-    fun mp4ConvertTo(mp4Stream : ByteArray, title : String , activity: Activity)
+    fun mp4ConvertTo(mp4Stream : ByteArray, title : String , activity: Activity , path : String)
     {
-        val downloadDir = "/storage/emulated/0/Download"
-
-        val target = File("$downloadDir/${title}.${AuthObj.fileTypeDownloadVideo}")
+        val target = File("$path/${title}.${AuthObj.fileTypeDownloadVideo}")
 
         if(AuthObj.fileTypeDownloadVideo.equals(FILE_TYPE_VIDEO))
         {
@@ -25,7 +24,7 @@ object Converter
             return
         }
 
-        val source = kotlin.io.createTempFile("videos_",".mp4", File(downloadDir))
+        val source = kotlin.io.createTempFile("videos_",".mp4", File(path))
 
         source.writeBytes(mp4Stream)
 
