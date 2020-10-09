@@ -44,8 +44,8 @@ class SplashActivity : AppCompatActivity() {
             R.anim.app_name_animation);
         tv_utubed.startAnimation(animation);
 
-        animation = AnimationUtils.loadAnimation(this, R.anim.pro_animation);
-        tv_downloader.startAnimation(animation);
+        //animation = AnimationUtils.loadAnimation(this, R.anim.pro_animation);
+        //tv_downloader.startAnimation(animation);
     }
 
 
@@ -55,9 +55,9 @@ class SplashActivity : AppCompatActivity() {
             R.anim.app_name_animation_back);
         tv_utubed.startAnimation(animation);
 
-        animation = AnimationUtils.loadAnimation(this,
-            R.anim.pro_animation_back);
-        tv_downloader.startAnimation(animation);
+        //animation = AnimationUtils.loadAnimation(this,
+        //    R.anim.pro_animation_back);
+        //tv_downloader.startAnimation(animation);
 
         animation?.setAnimationListener(object : Animation.AnimationListener
         {

@@ -1,5 +1,7 @@
 package com.wlp.utubed
 
+import android.Manifest
+import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -12,25 +14,30 @@ import android.os.Environment
 import android.speech.RecognizerIntent
 import android.text.Html
 import android.text.SpannableStringBuilder
-import android.view.*
+import android.util.Log
+import android.view.MenuItem
+import android.view.View
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.wlp.utubed.activities.LoginActivity
 import com.wlp.utubed.activities.SigninActivity
+import com.wlp.utubed.adapters.FolderListAdapter
 import com.wlp.utubed.adapters.ListVideosAdapter
 import com.wlp.utubed.domain.AuthObj
 import com.wlp.utubed.model.UserObj
@@ -46,6 +53,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.io.InputStream
+import java.util.*
 
 class UTubeDActivity : AppCompatActivity() {
 
@@ -54,8 +62,10 @@ class UTubeDActivity : AppCompatActivity() {
      var language : String? = null
      var fileTypeDownloadVideo: String? = null
 
-    val SPEECH_REQUEST_CODE = 1234;
+    val SPEECH_REQUEST_CODE = 1234
+    val REQUEST_DIRECTORY = 1235
 
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -63,6 +73,8 @@ class UTubeDActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        folder_in_tv.text = getString(R.string.download_in, getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)!!.absolutePath)
 
 
         supportActionBar?.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
@@ -81,6 +93,12 @@ class UTubeDActivity : AppCompatActivity() {
         )
 
         LocalBroadcastManager.getInstance(this).registerReceiver(
+            logoutReceiver, IntentFilter(
+                BROADCAST_LOGOUT
+            )
+        )
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(
             listVideosReceiver, IntentFilter(
                 BROADCAST_FIND_VIDEOS
             )
@@ -89,6 +107,12 @@ class UTubeDActivity : AppCompatActivity() {
         LocalBroadcastManager.getInstance(this).registerReceiver(
             videoDownloadReceiver, IntentFilter(
                 BROADCAST_DOWNLOAD_VIDEO
+            )
+        )
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+            listFolderReceiver, IntentFilter(
+                BROADCAST_FOLDER
             )
         )
 
@@ -211,6 +235,145 @@ class UTubeDActivity : AppCompatActivity() {
 
         }else {
 
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    fun onClickMusicFolderBtn(view : View)
+    {
+        if (!AuthObj.isLoggIn) {
+            ToastCustom.show(this@UTubeDActivity,getString(R.string.do_login))
+        }
+        else{
+
+            val permissionCheck_WRITE_EXTERNAL_STORAGE = ContextCompat.checkSelfPermission((this@UTubeDActivity),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+            val permissionCheck_READ_EXTERNAL_STORAGE = ContextCompat.checkSelfPermission((this@UTubeDActivity),
+                Manifest.permission.READ_EXTERNAL_STORAGE);
+
+            if (permissionCheck_WRITE_EXTERNAL_STORAGE==PackageManager.PERMISSION_GRANTED
+                && permissionCheck_READ_EXTERNAL_STORAGE==PackageManager.PERMISSION_GRANTED){
+                //this means permission is granted and you can do read and write
+            }else{
+                ActivityCompat.requestPermissions((this@UTubeDActivity),
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_WRITE_PERMISSION);
+            }
+
+            val builder = AlertDialog.Builder(this@UTubeDActivity)
+            dialogView = layoutInflater.inflate(R.layout.folder_dialog_destination, null)
+
+            val path_dir_tv = dialogView.findViewById<TextView>(R.id.path_dir_tv)
+            val up_dir_btn = dialogView.findViewById<ImageView>(R.id.up_dir_btn)
+            val dir_exit_tv = dialogView.findViewById<TextView>(R.id.dir_exit_tv)
+            val dir_ok_tv = dialogView.findViewById<TextView>(R.id.dir_ok_tv)
+            folderLV = dialogView.findViewById<RecyclerView>(R.id.folderListView)
+
+            dir_exit_tv.setOnClickListener {
+                alertDialog.dismiss()
+            }
+
+            dir_ok_tv.setOnClickListener {
+                folder_in_tv.text = getString(R.string.download_in, path_dir_tv.text)
+                alertDialog.dismiss()
+            }
+
+            up_dir_btn.setOnClickListener {
+                folders.clear()
+                val originalPath = path_dir_tv.text
+                var path : String? = null
+
+                if(originalPath.equals("/storage/emulated/0")) path = "/storage/emulated/0"
+                else path = originalPath.substring(0, originalPath.lastIndexOf("/"))
+
+                val listDirectories = File(path).getListDirectories()
+                if(listDirectories.size == 0) listDirectories.add(getString(R.string.double_dot))
+                folders.addAll(listDirectories)
+                path_dir_tv.text = path
+                folderLV.adapter!!.notifyDataSetChanged()
+            }
+
+
+            val path = folder_in_tv.text.substring((folder_in_tv.text.indexOf(":") + 1),folder_in_tv.text.length)
+
+            path_dir_tv.text = path
+
+            folders = File(path).getListDirectories()
+
+            if(folders.size == 0) folders.add(getString(R.string.double_dot))
+
+            folderListAdapter = FolderListAdapter(this@UTubeDActivity, folders)
+            folderLV.adapter = folderListAdapter
+
+            val linearLayout: GridLayoutManager = GridLayoutManager(this@UTubeDActivity, 1)
+            folderLV.layoutManager = linearLayout
+
+            alertDialog = builder.setView(dialogView).create()
+            alertDialog.show()
+        }
+    }
+
+    lateinit var alertDialog: AlertDialog
+    lateinit var dialogView: View
+    lateinit var folderListAdapter: FolderListAdapter
+    lateinit var folderLV : RecyclerView
+
+    var folders = mutableListOf<String>()
+
+
+    val listFolderReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?)
+        {
+            folders.clear()
+
+            val path_dir_tv = dialogView.findViewById<TextView>(R.id.path_dir_tv)
+            val fold = intent!!.getStringExtra(INTENT_FOLDER)
+            val path = "${path_dir_tv.text}/${fold}"
+
+            val listDirectories = File(path).getListDirectories()
+
+            if(listDirectories.size == 0) listDirectories.add(getString(R.string.double_dot))
+            folders.addAll(listDirectories)
+            path_dir_tv.text = path
+            folderLV.adapter!!.notifyDataSetChanged()
+        }
+    }
+
+    fun File.getListDirectories() : MutableList<String> {
+
+        var folders = mutableListOf<String>()
+        try {
+            var list = File(absolutePath).list()
+
+            Arrays.sort(list)
+
+            if (list == null) {
+                folders.add(getText(R.string.no_access).toString())
+                return folders
+            }
+
+            list?.forEach {
+                //if (File("$absolutePath/$it").isDirectory) {
+                    folders.add("$absolutePath/$it")
+                //}
+            }
+        }catch (e : Exception){
+            Log.e(UTubeDActivity::class.java.name, e.message , e)
+        }
+        return folders
+    }
+
+    val logoutReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?)
+        {
+            var nav_view = findViewById<NavigationView>(R.id.nav_view)
+            nav_view.menu.findItem(R.id.loginItem).setTitle(getString(R.string.login));
+            nav_view.menu.findItem(R.id.loginItem).setIcon(android.R.drawable.ic_secure)
+            emailTxt.text = ""
+            userImg.setImageResource(R.mipmap.profiledefault)
+
+            UserObj.reset()
+            AuthObj.reset()
         }
     }
 
@@ -436,7 +599,7 @@ class UTubeDActivity : AppCompatActivity() {
                                     {
                                         ToastCustom.show(this@UTubeDActivity,getString(R.string.status_2))
 
-                                        val path = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)!!.absolutePath
+                                        val path = folder_in_tv.text.substring((folder_in_tv.text.indexOf(":") + 1),folder_in_tv.text.length)
 
                                         Converter.mp4ConvertTo(messaggio, title, this@UTubeDActivity, path)
 

@@ -2,8 +2,10 @@ package com.wlp.utubed.services
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.view.View
 import android.widget.Toast
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.NetworkResponse
 import com.android.volley.Response
@@ -17,6 +19,7 @@ import com.wlp.utubed.model.BaseStringPostRequest
 import com.wlp.utubed.models.DownloadVideo
 import com.wlp.utubed.models.FindVideos
 import com.wlp.utubed.network.VolleyMultipartRequest
+import com.wlp.utubed.util.BROADCAST_LOGIN
 import com.wlp.utubed.util.ToastCustom
 import com.wlp.utubed.util.URI_DOWNLOAD_VIDEO
 import com.wlp.utubed.util.URI_FIND_VIDEOS
@@ -39,7 +42,8 @@ object VideoService
             , Response.ErrorListener {
                     error -> try{complete(false, error.message!!)}catch (e: Exception){
                 (context as UTubeDActivity).manageSpinner(true, View.INVISIBLE)
-                ToastCustom.show(context,context.getString(R.string.session_exparied))}
+                ToastCustom.show(context,context.getString(R.string.session_exparied))
+                LocalBroadcastManager.getInstance(context).sendBroadcast(Intent(BROADCAST_LOGIN))}
             } , mapHeader)
 
         baseStringRequest.setRetryPolicy(DefaultRetryPolicy(
