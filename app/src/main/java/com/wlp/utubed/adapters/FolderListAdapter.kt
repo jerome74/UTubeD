@@ -9,6 +9,8 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
+import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +19,7 @@ import android.widget.MediaController
 import android.widget.TextView
 import android.widget.VideoView
 import androidx.annotation.RequiresApi
+import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
@@ -58,16 +61,27 @@ class FolderListAdapter(val context : Context, val folders : List<String>) :  Re
 
                         if(f.name.endsWith("mp3")) {
 
-                            val mp3 = Uri.parse("file://${f.absolutePath}")
+                            try{
+                                val contentUri = FileProvider.getUriForFile(context, "com.wlp.utubed", f);
+                                val viewMediaIntent = Intent(Intent.ACTION_VIEW)
+                                viewMediaIntent.setDataAndType(contentUri, "audio/*")
+                                viewMediaIntent.addFlags( Intent.FLAG_GRANT_WRITE_URI_PERMISSION or  Intent.FLAG_GRANT_READ_URI_PERMISSION )
+                                context.startActivity(viewMediaIntent);
+                            }catch (e : Exception){
+                                Log.e(this@FolderListAdapter::class.java.name, e.message, e)
+                            }
+                        }
+                        else if(f.name.endsWith("mp4")) {
 
-                            val intent = Intent(Intent.ACTION_VIEW, mp3);
-
-                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                            intent.setType("audio/mpeg");
-
-                            val chooser = Intent.createChooser(intent, "Play the song with");
-                            //context.startActivity(intent);
-                            context.startActivity(chooser);
+                            try{
+                                val contentUri = FileProvider.getUriForFile(context, "com.wlp.utubed", f);
+                                val viewMediaIntent = Intent(Intent.ACTION_VIEW)
+                                viewMediaIntent.setDataAndType(contentUri, "video/*")
+                                viewMediaIntent.addFlags( Intent.FLAG_GRANT_WRITE_URI_PERMISSION or  Intent.FLAG_GRANT_READ_URI_PERMISSION )
+                                context.startActivity(viewMediaIntent);
+                            }catch (e : Exception){
+                                Log.e(this@FolderListAdapter::class.java.name, e.message, e)
+                            }
                         }
                     }
                 }

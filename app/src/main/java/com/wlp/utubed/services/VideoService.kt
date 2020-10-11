@@ -19,10 +19,7 @@ import com.wlp.utubed.model.BaseStringPostRequest
 import com.wlp.utubed.models.DownloadVideo
 import com.wlp.utubed.models.FindVideos
 import com.wlp.utubed.network.VolleyMultipartRequest
-import com.wlp.utubed.util.BROADCAST_LOGIN
-import com.wlp.utubed.util.ToastCustom
-import com.wlp.utubed.util.URI_DOWNLOAD_VIDEO
-import com.wlp.utubed.util.URI_FIND_VIDEOS
+import com.wlp.utubed.util.*
 
 object VideoService
 {
@@ -43,7 +40,7 @@ object VideoService
                     error -> try{complete(false, error.message!!)}catch (e: Exception){
                 (context as UTubeDActivity).manageSpinner(true, View.INVISIBLE)
                 ToastCustom.show(context,context.getString(R.string.session_exparied))
-                LocalBroadcastManager.getInstance(context).sendBroadcast(Intent(BROADCAST_LOGIN))}
+                LocalBroadcastManager.getInstance(context).sendBroadcast(Intent(BROADCAST_LOGOUT))}
             } , mapHeader)
 
         baseStringRequest.setRetryPolicy(DefaultRetryPolicy(
