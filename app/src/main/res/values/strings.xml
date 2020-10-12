@@ -79,6 +79,7 @@
     <string name="no_access">( Access Denied )</string>
     <string name="double_dot">.</string>
     <string name="download_in">folder :%1$s</string>
+    <string name="play_error">error on play :%1$s</string>
 
 
     <string-array name="type_file">

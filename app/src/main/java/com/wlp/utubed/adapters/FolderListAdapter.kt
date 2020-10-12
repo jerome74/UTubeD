@@ -24,9 +24,11 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wlp.utubed.R
+import com.wlp.utubed.UTubeDActivity
 import com.wlp.utubed.util.BROADCAST_FOLDER
 import com.wlp.utubed.util.BROADCAST_LOGIN
 import com.wlp.utubed.util.INTENT_FOLDER
+import com.wlp.utubed.util.ToastCustom
 import java.io.File
 
 class FolderListAdapter(val context : Context, val folders : List<String>) :  RecyclerView.Adapter<FolderListAdapter.Holder>() {
@@ -46,14 +48,21 @@ class FolderListAdapter(val context : Context, val folders : List<String>) :  Re
 
             tilte_folder_tv.text = f.name
 
+
+
             if(f.isDirectory){
 
                 val folder = BitmapFactory.decodeResource(context.resources, context.resources.getIdentifier("folder", "mipmap", context.packageName))
                 folder_img.setImageBitmap(folder)
-                setEventClick(folder_img,f.name,layoutInflater)
+
+                setEventClick(folder_img,f.name)
+                setEventClick(tilte_folder_tv,f.name)
             }
             else{
                 if(f.name.endsWith(".mp3") || f.name.endsWith(".mp4")){
+
+                    val contentUri = FileProvider.getUriForFile(context, "com.wlp.utubed", f);
+
                     val file_p = BitmapFactory.decodeResource(context.resources, context.resources.getIdentifier("file_p", "mipmap", context.packageName))
                     folder_img.setImageBitmap(file_p);
 
@@ -61,27 +70,13 @@ class FolderListAdapter(val context : Context, val folders : List<String>) :  Re
 
                         if(f.name.endsWith("mp3")) {
 
-                            try{
-                                val contentUri = FileProvider.getUriForFile(context, "com.wlp.utubed", f);
-                                val viewMediaIntent = Intent(Intent.ACTION_VIEW)
-                                viewMediaIntent.setDataAndType(contentUri, "audio/*")
-                                viewMediaIntent.addFlags( Intent.FLAG_GRANT_WRITE_URI_PERMISSION or  Intent.FLAG_GRANT_READ_URI_PERMISSION )
-                                context.startActivity(viewMediaIntent);
-                            }catch (e : Exception){
-                                Log.e(this@FolderListAdapter::class.java.name, e.message, e)
-                            }
+                            setEventClickPlay(folder_img, contentUri , "audio/*", f.name)
+                            setEventClickPlay(tilte_folder_tv, contentUri , "audio/*", f.name)
                         }
                         else if(f.name.endsWith("mp4")) {
 
-                            try{
-                                val contentUri = FileProvider.getUriForFile(context, "com.wlp.utubed", f);
-                                val viewMediaIntent = Intent(Intent.ACTION_VIEW)
-                                viewMediaIntent.setDataAndType(contentUri, "video/*")
-                                viewMediaIntent.addFlags( Intent.FLAG_GRANT_WRITE_URI_PERMISSION or  Intent.FLAG_GRANT_READ_URI_PERMISSION )
-                                context.startActivity(viewMediaIntent);
-                            }catch (e : Exception){
-                                Log.e(this@FolderListAdapter::class.java.name, e.message, e)
-                            }
+                            setEventClickPlay(folder_img, contentUri , "video/*", f.name)
+                            setEventClickPlay(tilte_folder_tv, contentUri , "audio/*", f.name)
                         }
                     }
                 }
@@ -114,18 +109,43 @@ class FolderListAdapter(val context : Context, val folders : List<String>) :  Re
         val item = folders[position]
     }
 
-    fun setEventClick(img : ImageView, folder: String, layoutInflater : LayoutInflater) {
+    /**
+     *
+     */
+
+    fun setEventClick(view : View, folder: String) {
 
         val localIntent = Intent(BROADCAST_FOLDER)
 
         localIntent.putExtra(INTENT_FOLDER, folder )
 
-        img?.setOnClickListener({
+        view?.setOnClickListener({
 
             if(!folder.equals(context.getString(R.string.double_dot))
                 &&!folder.equals(context.getString(R.string.no_access)))
                     LocalBroadcastManager.getInstance(context).sendBroadcast(localIntent)
         })
 
+    }
+
+    /**
+     *
+     */
+
+    fun setEventClickPlay(view : View, uriFile : Uri , dataAndType : String, fileName : String){
+        view?.setOnClickListener({
+
+                try{
+
+                    val viewMediaIntent = Intent(Intent.ACTION_VIEW)
+                    viewMediaIntent.setDataAndType(uriFile, dataAndType)
+                    viewMediaIntent.addFlags( Intent.FLAG_GRANT_WRITE_URI_PERMISSION or  Intent.FLAG_GRANT_READ_URI_PERMISSION )
+                    context.startActivity(viewMediaIntent);
+                }catch (e : Exception){
+
+                    ToastCustom.show(context as UTubeDActivity,context.getString(R.string.play_error,fileName))
+                }
+
+        })
     }
 }

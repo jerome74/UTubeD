@@ -79,6 +79,7 @@
     <string name="no_access">( Accesso Negato )</string>
     <string name="double_dot">.</string>
     <string name="download_in">cartella :%1$s</string>
+    <string name="play_error">error riproduzione :%1$s</string>
 
     <string-array name="type_file">
         <item>mp3</item>

@@ -6,6 +6,9 @@
     <external-files-path
         name="external_files"
         path="." />
+    <root-path
+        name="root"
+        path="." />
     <cache-path
         name="cache"
         path="." />
