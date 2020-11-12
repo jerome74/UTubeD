@@ -40,7 +40,7 @@ class ScannerizationActivity : AppCompatActivity() {
         var threshold = otsuThresholder.doThreshold(pix!!.getData());
 
         /* increase threshold because is better*/
-        threshold += 20;
+        threshold += 5;
         bitScannerization = com.googlecode.leptonica.android.WriteFile.writeBitmap(GrayQuant.pixThresholdToBinary(pix,threshold));
 
         try {
