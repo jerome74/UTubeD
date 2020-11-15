@@ -1,14 +1,12 @@
 package com.wlp.utubed.services
 
 import android.content.Context
-import android.util.Log
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Response
 import com.android.volley.toolbox.Volley
 import com.wlp.utubed.R
 import com.wlp.utubed.model.BaseStringPostRequest
 import com.wlp.utubed.models.UserSingIn
-import com.wlp.utubed.network.VolleyProvider
 import com.wlp.utubed.util.URI_SIGNIN
 
 object SigninService {
@@ -37,13 +35,6 @@ object SigninService {
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
         )
-/*
-        try {
-            VolleyProvider.getInstance(context)!!.addRequest(baseStringPostLoginRequest)
-        }catch (e: Exception) {
-            Log.e("UTUBED_LOG", "VolleyProvider error", e)
-        }
-*/
         Volley.newRequestQueue(context).add(baseStringPostLoginRequest)
 
     }

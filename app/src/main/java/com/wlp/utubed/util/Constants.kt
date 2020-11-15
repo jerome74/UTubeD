@@ -40,8 +40,8 @@ const val INTENT_FOLDER = "INTENT_9997"
  */
 
 //######################BASE_URI####################################
-//const val BASE_URL : String = "https://utubed.herokuapp.com"
-const val BASE_URL : String = "https://utubed-1601218389825.azurewebsites.net"
+const val BASE_URL : String = "https://utubed-service.herokuapp.com"
+//const val BASE_URL : String = "https://utubed-1601218389825.azurewebsites.net"
 //-------------------------------------------------------------------
 
 
