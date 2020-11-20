@@ -35,13 +35,7 @@ object SigninService {
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
         )
-/*
-        try {
-            VolleyProvider.getInstance(context)!!.addRequest(baseStringPostLoginRequest)
-        }catch (e: Exception) {
-            Log.e("IBOLLETTA_LOG", "VolleyProvider error", e)
-        }
-*/
+
         Volley.newRequestQueue(context).add(baseStringPostLoginRequest)
 
     }

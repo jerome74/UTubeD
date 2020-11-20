@@ -27,25 +27,36 @@
             android:orientation="vertical"
             app:layout_constraintGuide_begin="16dp" />
 
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="53dp"
-            android:layout_height="68dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="4dp"
+            android:freezesText="false"
+            android:gravity="center|top"
+            android:text="IBolletta"
+            android:textAllCaps="false"
+            android:textColor="@color/design_default_color_on_secondary"
+            android:textSize="40sp"
+            android:textStyle="bold|italic"
+            app:flow_horizontalAlign="center"
+            app:flow_verticalAlign="top"
+            app:layout_constraintBottom_toTopOf="@+id/devider2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@mipmap/ic_launcher" />
-
-        <ImageView
-            android:id="@+id/imageView8"
-            android:layout_width="207dp"
-            android:layout_height="55dp"
-            android:layout_marginTop="2dp"
-            android:scaleType="centerCrop"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ibolletta" />
+            app:layout_constraintVertical_bias="0.0" />
+
+        <View
+            android:id="@+id/devider2"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_marginTop="48dp"
+            android:background="@color/colorPrimary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
