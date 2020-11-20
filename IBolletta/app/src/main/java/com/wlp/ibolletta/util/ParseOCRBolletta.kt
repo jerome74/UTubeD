@@ -14,17 +14,26 @@ class ParseORCBolletta(val toParseString: String) {
     {
         var numberBarCode = ""
 
-        val cleanString = toParseString.trim().replace(" ", "")
-        val pat = Pattern.compile("""\d{50}""").matcher(cleanString)
+        val cleanString = Regex("[^A-Za-z0-9]").replace(toParseString," ")
+        var pat = Pattern.compile("""\d{50}""").matcher(cleanString)
 
         if (pat.find()) {
             numberBarCode =  pat.group(0)
+        }
+        else{
+            pat = Pattern.compile("""18\d{5}""").matcher(cleanString)
+
+            if (pat.find()) {
+                numberBarCode =  pat.group(0)
+                numberBarCode = cleanString.substring(cleanString.indexOf(numberBarCode), cleanString.indexOf(numberBarCode) + 50)
+            }
         }
 
         if(!numberBarCode.isBlank()){
             numero  = numberBarCode.substring(2, 20)
             cc      = numberBarCode.substring(22, 34)
             importo = numberBarCode.substring(36, 46)
+            importo = "${importo.substring(0, importo.length - 2)},${importo.substring(importo.length - 2, importo.length)}"
             td      = numberBarCode.substring(47, 50)
         }
         else{

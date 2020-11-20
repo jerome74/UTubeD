@@ -19,6 +19,7 @@ import com.wlp.ibolletta.model.UserObj
 import com.wlp.ibolletta.model.UserProfile
 import com.wlp.ibolletta.service.EmailService
 import com.wlp.ibolletta.service.LoginService
+import com.wlp.ibolletta.util.BROADCAST_FIND_BOLLETTE
 import com.wlp.ibolletta.util.BROADCAST_LOGIN
 import com.wlp.ibolletta.util.ToastCustom
 import kotlinx.android.synthetic.main.activity_login.*
@@ -141,7 +142,10 @@ class LoginActivity : AppCompatActivity() {
                             , responseJson.getString("avatarcolor"))
                         UserObj.userProfile = userProfile
                         manageSpinner(true, View.INVISIBLE)
-                        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(BROADCAST_LOGIN))
+
+                        val findBolletteIntent = Intent(BROADCAST_FIND_BOLLETTE)
+                        findBolletteIntent.putExtra("EMAIL" , userProfile.email)
+                        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(findBolletteIntent))
 
                         ToastCustom.show(this@LoginActivity,getString(R.string.profile_found_success))
                         finish()

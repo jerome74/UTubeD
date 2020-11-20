@@ -1,5 +1,6 @@
 package com.wlp.ibolletta.activities
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -9,14 +10,16 @@ import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.vision.Frame
 import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
+import com.google.android.gms.vision.face.FaceDetector
 import com.wlp.ibolletta.R
-import com.wlp.ibolletta.util.ParseORCBolletta
-import com.wlp.ibolletta.util.TaskOCR
-import com.wlp.ibolletta.util.TessOCR
+import com.wlp.ibolletta.models.Bolletta
+import com.wlp.ibolletta.util.*
 import kotlinx.android.synthetic.main.activity_ocr.*
+import kotlinx.android.synthetic.main.bolletta_item_list.*
 
 class OCRActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.KITKAT)
@@ -47,8 +50,8 @@ class OCRActivity : AppCompatActivity() {
                     custom_ocr_tv.visibility = View.VISIBLE
                     custom_ocr_tv.text = " ${getString(R.string.elab_ocr)} "
                 })
+                //barcode()
                 ocr()
-                barcode()
             }catch (e : Exception){
                 Log.e("ERROR", e.localizedMessage , e)
             }
@@ -77,17 +80,19 @@ class OCRActivity : AppCompatActivity() {
     }
 
     fun barcode(){
-        val detector = BarcodeDetector.Builder(getApplicationContext())
-            .setBarcodeFormats(Barcode.DATA_MATRIX or Barcode.CODABAR)
-        .build();
+        val faceDetector = FaceDetector.Builder(this).setTrackingEnabled(false).build();
 
-        val frame = Frame.Builder().setBitmap(KeepAndFlipImgeActivity.croppedImage!!).build();
+        if (!faceDetector.isOperational()) {
+           Log.i("INFO", "Could not set up the detector!");
+        }
+        else{
+            val frame = Frame.Builder().setBitmap(ScannerizationActivity.bitScannerization!!).build();
+            val barcodes = faceDetector.detect(frame);
+            val code = barcodes.valueAt(0);
+            val result = code.id;
 
-        val barcodes = detector.detect(frame)
+            Log.i("INFO", "Could not set up the detector!");
 
-        for(i in 0 until  barcodes.size()){
-            val barcode = barcodes[i]
-            barcode.rawValue
         }
     }
 
@@ -100,14 +105,56 @@ class OCRActivity : AppCompatActivity() {
            val parseORCBolletta = ParseORCBolletta(result)
            parseORCBolletta.parseNumberBarCode()
 
-           import_value.text = edit.newEditable(parseORCBolletta.importo)
-           number_value.text = edit.newEditable(parseORCBolletta.numero)
-           cc_value.text = edit.newEditable(parseORCBolletta.cc)
+           import_value.text = edit.newEditable(parseORCBolletta.importo.trimStart('0'))
+           number_value.text = edit.newEditable(parseORCBolletta.numero.trimStart('0'))
+           cc_value.text = edit.newEditable(parseORCBolletta.cc.trimStart('0'))
+           td_value.text = edit.newEditable(parseORCBolletta.td.trimStart('0'))
 
            scad_value.text = edit.newEditable(parseORCBolletta.getScadenza())
        }
         else{
            ocr_result_tv.text = getString(R.string.no_elab_ocr)
        }
+    }
+
+    fun onSaveStepOcrClicked(viev : View){
+
+        if(cc_value.text.isBlank() && (
+                    import_value.text.isBlank() ||
+                    scad_value.text.isBlank() ||
+                    number_value.text.isBlank() ||
+                    owner_value.text.isBlank() ||
+                    td_value.text.isBlank()
+                    )){
+            ToastCustom.show(this@OCRActivity, getString(R.string.no_valid_ocr))
+        }
+
+        cc_value.text.ifBlank { ToastCustom.show(this@OCRActivity, getString(R.string.no_cc_value))
+            return }
+
+        import_value.text.ifBlank { ToastCustom.show(this@OCRActivity, getString(R.string.no_input_value))
+            return }
+
+        scad_value.text.ifBlank { ToastCustom.show(this@OCRActivity, getString(R.string.no_scad_value))
+            return }
+
+        number_value.text.ifBlank { ToastCustom.show(this@OCRActivity, getString(R.string.no_number_value))
+            return }
+
+        owner_value.text.ifBlank { ToastCustom.show(this@OCRActivity, getString(R.string.no_owner_value))
+            return }
+
+        td_value.text.ifBlank { ToastCustom.show(this@OCRActivity, getString(R.string.no_td_value))
+            return }
+
+        val saveBollettaIntent = Intent(BROADCAST_SAVE_BOLLETTA)
+        saveBollettaIntent.putExtra("BOLLETTA", Bolletta("",cc_value.text.toString()
+            ,import_value.text.toString()
+            ,scad_value.text.toString()
+            ,numero_item_value.text.toString()
+            ,owner_item_value.text.toString()
+            ,td_item_value.text.toString()))
+
+        LocalBroadcastManager.getInstance(this@OCRActivity).sendBroadcast(saveBollettaIntent)
     }
 }
