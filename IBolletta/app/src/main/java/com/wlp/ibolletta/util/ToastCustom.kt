@@ -21,7 +21,7 @@ object ToastCustom
         //Getting the View object as defined in the customtoast.xml file
         val layout: View = li.inflate(R.layout.toast_custom,ibolletta.findViewById<ViewGroup>(R.id.custom_toast_layout))
         //Creating the Toast object
-        layout.tv_toast_msg.text = text
+        layout.tv_toast_msg.text = " $text "
         //Creating the Toast object
         val toast = Toast(ibolletta.applicationContext)
         toast.duration = Toast.LENGTH_LONG

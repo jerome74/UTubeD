@@ -21,9 +21,18 @@ class ParseORCBolletta(val toParseString: String) {
             numberBarCode =  pat.group(0)
         }
         else{
-            pat = Pattern.compile("""18\d{5}""").matcher(cleanString)
 
-            if (pat.find()) {
+
+            if(Pattern.compile("""18\d{5}""").matcher(cleanString).find())
+                pat = Pattern.compile("""18\d{5}""").matcher(cleanString)
+            else if(Pattern.compile("""1 8\d{5}""").matcher(cleanString).find())
+                pat = Pattern.compile("""1 8\d{5}""").matcher(cleanString)
+            else if(Pattern.compile("""1 8 \d{5}""").matcher(cleanString).find())
+                pat = Pattern.compile("""1 8 \d{5}""").matcher(cleanString)
+            else
+                pat = Pattern.compile("""18 \d{5}""").matcher(cleanString)
+
+                    if (pat.find()) {
                 numberBarCode =  pat.group(0)
                 numberBarCode = cleanString.substring(cleanString.indexOf(numberBarCode), cleanString.indexOf(numberBarCode) + 50)
             }
