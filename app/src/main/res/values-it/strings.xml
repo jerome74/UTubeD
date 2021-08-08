@@ -1,0 +1,94 @@
+<resources>
+    <string name="app_name">UTubeD</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="_true_">true</string>
+    <string name="_false_">false</string>
+
+    <string name="login">Accesso</string>
+    <string name="logout">Disconnetti</string>
+
+    <string name="signin">Registrati</string>
+    <string name="ricerca">Ricerca</string>
+
+    <string name="extra_language">it-IT</string>
+    <string name="language">en-EN</string>
+    <string name="file">File :</string>
+    <string name="lingua">Lingua :</string>
+    <string name="mp3">" mp3 "</string>
+    <string name="italiano">" IT "</string>
+    <string name="video">" video "</string>
+    <string name="english">" EN "</string>
+    <string name="status_ini"></string>
+    <string name="status_1"> Inizio\n\n Scaricamento </string>
+    <string name="status_2"> Fine\n\n Scaricamento </string>
+    <string name="status_3"> Inizio\n\n Conversione </string>
+    <string name="status_4"> Fine\n\n Conversione </string>
+    <string name="status_5"> Inizio\n\n Salvataggio File </string>
+    <string name="status_6"> Fine\n\n Salvataggio File </string>
+    <string name="status_7">Elaborazione</string>
+    <string name="log_in">Accesso</string>
+    <string name="biometric">Biometrica</string>
+    <string name="client_id">guest</string>
+    <string name="secret_id">guest</string>
+    <string name="auth_error">Errore Autenticazione: %1$s</string>
+    <string name="login_error">Errore Accesso: %1$s</string>
+    <string name="find_file_error">Errore Ricerca Files: %1$s</string>
+    <string name="find_file_failed">Ricerca Files Fallita: %1$s</string>
+    <string name="auth_failed">Autenticazione Fallita</string>
+    <string name="bio_title">Accesso Biometrico</string>
+    <string name="bio_subtitle">Accesso con i tuoi dati Biometrici</string>
+    <string name="bio_neg_btn">Usa la Passowrd del account</string>
+    <string name="login_success">Accesso con successo</string>
+    <string name="profile_found_success">Profilo trovato con successo</string>
+    <string name="login_failed">Accesso fallito: %1$s</string>
+    <string name="profile_found_error">Errore Ricerca Profilo: %1$s</string>
+    <string name="profile_found_failed">Ricerca Profilo Fallito %1$s</string>
+    <string name="email_check">Registrazione effettuata, controlla la tua E-mail</string>
+    <string name="signin_error">Errore Registrazione: %1$s</string>
+    <string name="signin_failed">Registrazione fallita: %1$s</string>
+    <string name="download">Scarica</string>
+    <string name="cancel">Cancella</string>
+    <string name="msg_login_fail">E-mail e\o password errata</string>
+    <string name="msg_signin_fail">Impossibile eseguire la registrazione</string>
+    <string name="error_download">Errore Scaricamento File</string>
+    <string name="do_login">Eseguire Accesso!</string>
+    <string name="select_language">Selezionare Lingua</string>
+    <string name="no_vaild_word">Parola non valida</string>
+    <string name="insert_title_video">inserire il nome del video da ricercare!</string>
+    <string name="select_type_dwonload">Selezionare tipo di Download!</string>
+    <string name="videos_found_successfully">Video trovato con successo</string>
+    <string name="download_success">Scaricamento completato in: %1$s</string>
+    <string name="download_error">Errore Scaricamento: %1$s</string>
+    <string name="download_failed">Scaricamento Fallito: %1$s</string>
+    <string name="nickname">Soprannome</string>
+    <string name="downloader">Scaricamento</string>
+    <string name="ric_video">"   Ricerca video"</string>
+    <string name="UTUBED">UTUBED</string>
+    <string name="session_exparied">Sessione Scaduta</string>
+    <string name="dir_exit">esci</string>
+    <string name="dir_ok">conferma</string>
+    <string name="no_access">( Accesso Negato )</string>
+    <string name="double_dot">.</string>
+    <string name="download_in">cartella :%1$s</string>
+    <string name="play_error">error riproduzione :%1$s</string>
+
+    <string-array name="type_file">
+        <item>mp3</item>
+        <item>mp4</item>
+    </string-array>
+
+    <string-array name="type_language">
+        <item>It</item>
+        <item>En</item>
+    </string-array>
+
+</resources>

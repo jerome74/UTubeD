@@ -1,0 +1,95 @@
+<resources>
+    <string name="app_name">UTubeD</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="_true_">true</string>
+    <string name="_false_">false</string>
+
+    <string name="login">Log-In</string>
+    <string name="logout">Log-Out</string>
+
+    <string name="signin">Sign-In</string>
+    <string name="ricerca">Find</string>
+
+    <string name="extra_language">it-IT</string>
+    <string name="language">en-EN</string>
+    <string name="file">File :</string>
+    <string name="lingua">Speech :</string>
+    <string name="mp3">" mp3 "</string>
+    <string name="italiano">" IT "</string>
+    <string name="video">" video "</string>
+    <string name="english">" EN "</string>
+    <string name="status_ini"></string>
+    <string name="status_1"> Start\n\n Download </string>
+    <string name="status_2"> End\n\n Download </string>
+    <string name="status_3"> Start\n\n Coding </string>
+    <string name="status_4"> End\n\n Coding </string>
+    <string name="status_5"> Start\n\n Save File </string>
+    <string name="status_6"> End\n\n Save File </string>
+    <string name="status_7">Elaboration</string>
+    <string name="log_in">Log-In</string>
+    <string name="biometric">Biometric</string>
+    <string name="client_id">guest</string>
+    <string name="secret_id">guest</string>
+    <string name="auth_error">Authentication error: %1$s</string>
+    <string name="login_error">Login error: %1$s</string>
+    <string name="find_file_error">Find Files error: %1$s</string>
+    <string name="find_file_failed">Find Files failed: %1$s</string>
+    <string name="auth_failed">Authentication failed</string>
+    <string name="bio_title">Biometric login for my app</string>
+    <string name="bio_subtitle">Log in using your biometric credential</string>
+    <string name="bio_neg_btn">Use account password</string>
+    <string name="login_success">User Login successfully</string>
+    <string name="profile_found_success">profile successfully found</string>
+    <string name="login_failed">Login failed: %1$s</string>
+    <string name="profile_found_error">Profile finding error: %1$s</string>
+    <string name="profile_found_failed">Profile found failed %1$s</string>
+    <string name="email_check">User registered, check in your email</string>
+    <string name="signin_error">Sign-In error: %1$s</string>
+    <string name="signin_failed">Sign-In failed: %1$s</string>
+    <string name="download">Download</string>
+    <string name="cancel">Cancel</string>
+    <string name="msg_login_fail">E-mail and/or password incorrect</string>
+    <string name="msg_signin_fail">Impossible to register account</string>
+    <string name="error_download">Error download file</string>
+    <string name="do_login">Do Log-In!</string>
+    <string name="select_language">Select Language</string>
+    <string name="no_vaild_word">No vaild word</string>
+    <string name="insert_title_video">Insert title of Video!</string>
+    <string name="select_type_dwonload">Select type of download!</string>
+    <string name="videos_found_successfully">Videos found successfully</string>
+    <string name="download_success">download successfully: %1$s</string>
+    <string name="download_error">Download error: %1$s</string>
+    <string name="download_failed">Download failed: %1$s</string>
+    <string name="nickname">Nickname</string>
+    <string name="downloader">Downloader</string>
+    <string name="ric_video">"   Find Video"</string>
+    <string name="UTUBED">UTUBED</string>
+    <string name="session_exparied">Session exparied</string>
+    <string name="dir_exit">exit</string>
+    <string name="dir_ok">confirm</string>
+    <string name="no_access">( Access Denied )</string>
+    <string name="double_dot">.</string>
+    <string name="download_in">folder :%1$s</string>
+    <string name="play_error">error on play :%1$s</string>
+
+
+    <string-array name="type_file">
+        <item>mp3</item>
+        <item>mp4</item>
+    </string-array>
+
+    <string-array name="type_language">
+        <item>It</item>
+        <item>En</item>
+    </string-array>
+
+</resources>
